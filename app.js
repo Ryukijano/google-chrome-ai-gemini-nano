@@ -5,8 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const { available } = await ai.languageModel.capabilities();
             if (available !== "no") {
                 const session = await ai.languageModel.create();
-                const result = await session.prompt(prompt);
-                displayResult(result);
+                const stream = await session.promptStreaming(prompt);
+                let fullResponse = '';
+                let previousLength = 0;
+                for await (const chunk of stream) {
+                    const newContent = chunk.slice(previousLength);
+                    fullResponse += newContent;
+                    displayResult(fullResponse);
+                    previousLength = chunk.length;
+                }
             } else {
                 displayError("AI model is not available.");
             }
