@@ -1,2 +1,1 @@
-# google-chrome-ai-gemini-nano
-A repository for the Google Chrome Built-in AI Challenge project
+This repository is empty. Any task executed on it should be considered a new capability and needs to be created.
