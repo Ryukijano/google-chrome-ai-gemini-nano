@@ -45,6 +45,36 @@ Whether you're a seasoned web developer or just getting started, the Google Chro
      - Once the model has downloaded and has reached a version greater than shown above, open DevTools and send `(await ai.languageModel.capabilities()).available;` in the console. If this returns “readily”, then you are all set.
      - Otherwise, relaunch, wait for a little while, and try again from step 1.
 
+### Setting up GitHub Pages
+
+1. **Create a `docs` directory:**
+   - In the root of your repository, create a directory named `docs`.
+
+2. **Add a `CNAME` file:**
+   - Inside the `docs` directory, create a file named `CNAME`.
+   - Add your custom domain to this file (e.g., `Ryukijano.github.io`).
+
+3. **Add a `_config.yml` file:**
+   - Inside the `docs` directory, create a file named `_config.yml`.
+   - Add the following configuration to this file:
+     ```yaml
+     # GitHub Pages configuration
+     title: Google Chrome Built-in AI Challenge
+     description: >
+       Develop a web application or Chrome Extension that uses one or more Chrome built-in AI APIs to interact with integrated models such as Gemini Nano.
+     baseurl: "/google-chrome-ai-gemini-nano"
+     url: "https://Ryukijano.github.io"
+     theme: jekyll-theme-cayman
+     ```
+
+4. **Push changes to GitHub:**
+   - Commit and push your changes to the repository.
+
+5. **Enable GitHub Pages:**
+   - Go to the repository settings on GitHub.
+   - Under the "Pages" section, select the `docs` directory as the source.
+   - Save the changes.
+
 ## Early Preview Program
 
 To get started, sign up for the [Early Preview Program](https://chrome.dev/web-ai-demos/prompt-api-playground/) to gain access to previously shared updates, the latest documentation, and stay up-to-date with any new changes, including additional APIs.
@@ -65,3 +95,15 @@ Let's learn and build together!
 ## Demonstration Video
 
 Watch the demonstration video to see the project in action: [Demonstration Video](https://www.youtube.com/watch?v=example)
+
+## AI-Powered Content Creation Studio
+
+Target Users: Bloggers, marketers, social media managers, anyone who creates online content.
+
+Core Features:
+- Idea Generation: Generate blog post ideas, social media captions, or marketing copy based on user-provided keywords or topics.
+- Content Writing: Use the Write API to create different types of content, such as articles, poems, scripts, or even code.
+- Content Enhancement: Offer suggestions for improving existing content using the Rewrite API (e.g., rephrasing sentences, adjusting tone, enhancing clarity).
+- Multilingual Support: Translate content into different languages using the Translation API.
+
+This is what I want to create.
