@@ -61,3 +61,7 @@ We value your feedback! Please share your thoughts and experiences with us to he
 - **Other questions or issues:** Reach out directly by sending an email to the mailing list owners (chrome-ai-dev-preview+owners@chromium.org).
 
 Let's learn and build together!
+
+## Demonstration Video
+
+Watch the demonstration video to see the project in action: [Demonstration Video](https://www.youtube.com/watch?v=example)
