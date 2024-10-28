@@ -1,30 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Google Chrome Built-in AI Challenge",
+  "name": "AI-Powered Content Creation Studio",
   "version": "1.0",
-  "description": "Develop a web application or Chrome Extension that uses one or more Chrome built-in AI APIs to interact with integrated models such as Gemini Nano.",
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
-  "action": {
-    "default_popup": "index.html",
-    "default_icon": {
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
-    }
-  },
+  "description": "A web application that uses Chrome built-in AI APIs to interact with integrated models such as Gemini Nano.",
+  "permissions": [],
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",

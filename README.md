@@ -1,4 +1,4 @@
-# Google Chrome Built-in AI Challenge
+# AI-Powered Content Creation Studio
 
 ## Project Description
 
@@ -17,51 +17,14 @@ This is your opportunity to experiment with these advanced capabilities and crea
 
 Whether you're a seasoned web developer or just getting started, the Google Chrome Built-in AI Challenge is the perfect opportunity to showcase your skills, collaborate with others, and infuse the web with your own brand of AI ingenuity. So, gather your team, let your creativity flow, and let’s see what happens when we give the web a brain boost!
 
-## Setup Instructions
+## AI-Powered Content Creation Studio
 
-### Enabling Gemini Nano and the Prompt API
+Target Users: Bloggers, marketers, social media managers, anyone who creates online content.
 
-1. **Acknowledge Google’s Generative AI Prohibited Uses Policy.**
-2. **Download Chrome Dev channel (or Canary channel), and confirm that your version is equal or newer than 128.0.6545.0.**
-3. **Check that your device meets the requirements.**
-   - At least 22 GB of free storage space.
-   - Integrated GPU, or discrete GPU (e.g. video card).
-   - 4 GB (minimum) Video RAM.
-   - A non-metered network connection.
-4. **Enable Gemini Nano and the Prompt API:**
-   - Open a new tab in Chrome, go to `chrome://flags/#optimization-guide-on-device-model`
-   - Select `Enabled BypassPerfRequirement`
-   - Go to `chrome://flags/#prompt-api-for-gemini-nano`
-   - Select `Enabled`
-   - Relaunch Chrome.
-5. **Confirm availability of Gemini Nano:**
-   - Open DevTools and send `(await ai.languageModel.capabilities()).available;` in the console. If this returns “readily”, then you are all set.
-   - If this fails, continue as follows:
-     - Force Chrome to recognize that you want to use this API. To do so, open DevTools and send `await ai.languageModel.create();` in the console. This will likely fail but it’s intended.
-     - Relaunch Chrome.
-     - Open a new tab in Chrome, go to `chrome://components`
-     - Confirm that Gemini Nano is either available or is being downloaded. You'll want to see the Optimization Guide On Device Model present with a version greater or equal to 2024.5.21.1031.
-     - If there is no version listed, click on `Check for update` to force the download.
-     - Once the model has downloaded and has reached a version greater than shown above, open DevTools and send `(await ai.languageModel.capabilities()).available;` in the console. If this returns “readily”, then you are all set.
-     - Otherwise, relaunch, wait for a little while, and try again from step 1.
+Core Features:
+- Idea Generation: Generate blog post ideas, social media captions, or marketing copy based on user-provided keywords or topics.
+- Content Writing: Use the Write API to create different types of content, such as articles, poems, scripts, or even code.
+- Content Enhancement: Offer suggestions for improving existing content using the Rewrite API (e.g., rephrasing sentences, adjusting tone, enhancing clarity).
+- Multilingual Support: Translate content into different languages using the Translation API.
 
-## Early Preview Program
-
-To get started, sign up for the [Early Preview Program](https://chrome.dev/web-ai-demos/prompt-api-playground/) to gain access to previously shared updates, the latest documentation, and stay up-to-date with any new changes, including additional APIs.
-
-## Feedback Submission and Contact Information
-
-We value your feedback! Please share your thoughts and experiences with us to help refine and improve the APIs and models.
-
-- **Feedback form for quality or technical issues:** [Feedback Form](https://goo.gle/chrome-ai-dev-preview-feedback-quality)
-- **Report bugs or issues related to Chrome’s behavior / implementation of the Prompt API:** [Chromium Bug Report](https://bugs.chromium.org/)
-- **Report ergonomic issues or other problems related to one of the built-in AI APIs:**
-  - [Prompt API spec issues](https://github.com/WICG/prompt-api/issues)
-  - [Translation API spec issues](https://github.com/WICG/translation-api/issues)
-- **Other questions or issues:** Reach out directly by sending an email to the mailing list owners (chrome-ai-dev-preview+owners@chromium.org).
-
-Let's learn and build together!
-
-## Demonstration Video
-
-Watch the demonstration video to see the project in action: [Demonstration Video](https://www.youtube.com/watch?v=example)
+This is what I want to create.
