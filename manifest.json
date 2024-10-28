@@ -3,11 +3,7 @@
   "name": "AI-Powered Content Creation Studio",
   "version": "1.0",
   "description": "A web application that uses Chrome built-in AI APIs to interact with integrated models such as Gemini Nano.",
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
-  ],
+  "permissions": [],
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",

@@ -54,4 +54,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetLanguage = document.getElementById('target-language').value;
         interactWithPromptAPI(`Translate the following content to ${targetLanguage}: ${content}`);
     }
+
+    // Initialize and render 3.js particle effects in the background
+    function initParticleEffects() {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const particles = new THREE.Geometry();
+        const particleMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 });
+
+        for (let i = 0; i < 10000; i++) {
+            const particle = new THREE.Vector3(
+                Math.random() * 2000 - 1000,
+                Math.random() * 2000 - 1000,
+                Math.random() * 2000 - 1000
+            );
+            particles.vertices.push(particle);
+        }
+
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+
+        camera.position.z = 1000;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particleSystem.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    }
+
+    initParticleEffects();
 });
