@@ -117,3 +117,96 @@ canvas {
     height: 100%;
     z-index: -1;
 }
+
+/* New styles for a fresh look and feel */
+body {
+    background: linear-gradient(135deg, #1a1a1a, #333);
+    color: #f4f4f4;
+}
+
+header {
+    background: linear-gradient(90deg, #4CAF50, #2E7D32);
+    color: white;
+    padding: 1.5em;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+main {
+    padding: 3em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3em;
+}
+
+footer {
+    background: #222;
+    color: white;
+    text-align: center;
+    padding: 1.5em;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.3);
+}
+
+section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5em;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+    margin-top: 0;
+    color: #4CAF50;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 1em;
+    margin: 1em 0;
+    border: none;
+    border-radius: 6px;
+    background: #444;
+    color: white;
+}
+
+button {
+    padding: 1em 2em;
+    border: none;
+    border-radius: 6px;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #2E7D32;
+}
+
+#idea-output, #content-output, #enhanced-output, #translation-output {
+    background: #333;
+    padding: 1.5em;
+    border-radius: 6px;
+    margin-top: 1.5em;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 600px) {
+    header, footer {
+        padding: 1em;
+    }
+
+    main {
+        padding: 1.5em;
+    }
+
+    section {
+        padding: 1em;
+    }
+}
