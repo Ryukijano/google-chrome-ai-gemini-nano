@@ -2,20 +2,11 @@
   "manifest_version": 3,
   "name": "Google Chrome Built-in AI Challenge",
   "version": "1.0",
-  "description": "Develop a web application or Chrome Extension that uses one or more Chrome built-in AI APIs to interact with integrated models such as Gemini Nano.",
+  "description": "Develop a web application that uses one or more Chrome built-in AI APIs to interact with integrated models such as Gemini Nano.",
   "permissions": [
     "activeTab",
     "scripting",
     "storage"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
   ],
   "action": {
     "default_popup": "index.html",
