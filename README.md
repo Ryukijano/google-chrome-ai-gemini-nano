@@ -1,4 +1,4 @@
-# Google Chrome Built-in AI Challenge
+# AI-Powered Content Creation Studio
 
 ## Project Description
 
