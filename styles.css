@@ -16,9 +16,174 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
+
+    background: #1a1a1a;
+
     background: linear-gradient(135deg, #1a1a1a, #333);
+
     color: #f4f4f4;
     overflow: hidden;
+}
+
+header {
+    background: linear-gradient(90deg, #4CAF50, #2E7D32);
+    color: white;
+    padding: 1.5em;
+    text-align: center;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+main {
+    padding: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
+}
+
+footer {
+    background: #333;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+main {
+    padding: 3em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3em;
+}
+
+footer {
+    background: #222;
+
+    color: white;
+    text-align: center;
+    padding: 1.5em;
+    position: sticky;
+    width: 100%;
+    bottom: 0;
+
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.3);
+
+}
+
+section {
+    background: rgba(255, 255, 255, 0.1);
+
+    padding: 1em;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    padding: 1.5em;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+}
+
+h2 {
+    margin-top: 0;
+    color: #4CAF50;
+}
+
+input, textarea {
+    width: 100%;
+
+    padding: 0.5em;
+    margin: 0.5em 0;
+    border: none;
+    border-radius: 4px;
+    background: #333;
+
+    padding: 1em;
+    margin: 1em 0;
+    border: none;
+    border-radius: 6px;
+    background: #444;
+
+    color: white;
+}
+
+button {
+
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 4px;
+
+    padding: 1em 2em;
+    border: none;
+    border-radius: 6px;
+
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #2E7D32;
+}
+
+#idea-output, #content-output, #enhanced-output, #translation-output {
+
+    background: #222;
+    padding: 1em;
+    border-radius: 4px;
+    margin-top: 1em;
+
+    background: #333;
+    padding: 1.5em;
+    border-radius: 6px;
+    margin-top: 1.5em;
+
+    white-space: pre-wrap;
+}
+
+@media (max-width: 600px) {
+    header, footer {
+        padding: 1em;
+    }
+
+    main {
+
+        padding: 1em;
+    }
+
+    section {
+        padding: 0.5em;
+
+        padding: 1.5em;
+    }
+
+    section {
+        padding: 1em;
+
+    }
+}
+
+/* Particle effects styles */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+
+}
+
+/* New styles for a fresh look and feel */
+body {
+    background: linear-gradient(135deg, #1a1a1a, #333);
+    color: #f4f4f4;
 }
 
 header {
@@ -42,7 +207,7 @@ footer {
     color: white;
     text-align: center;
     padding: 1.5em;
-    position: sticky;
+    position: fixed;
     width: 100%;
     bottom: 0;
     box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.3);
@@ -108,12 +273,25 @@ button:hover {
     }
 }
 
-/* Particle effects styles */
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+/* Style for feature-output to display streamed content clearly */
+#feature-output {
+    background: #444;
+    padding: 1em;
+    border-radius: 6px;
+    margin-top: 1em;
+    white-space: pre-wrap;
+    color: #f4f4f4;
 }
+
+/* Style for content-output to make the streamed content visually appealing */
+#content-output {
+    background: #444;
+    padding: 1em;
+    border-radius: 6px;
+    margin-top: 1em;
+    white-space: pre-wrap;
+    color: #f4f4f4;
+}
+
+}
+

@@ -59,4 +59,6 @@ To set up GitHub Pages for this project, follow these steps:
 5. **Enable GitHub Pages:**
    - Go to the repository settings on GitHub.
    - Under the "Pages" section, select the `docs` directory as the source.
+   - enable-inference
    - Save the changes.
+
