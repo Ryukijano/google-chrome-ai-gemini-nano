@@ -11,7 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 for await (const chunk of stream) {
                     const newContent = chunk.slice(previousLength);
                     fullResponse += newContent;
+
                     displayResult(newContent);
+
+                    displayResult(fullResponse);
+                  
                     previousLength = chunk.length;
                 }
             } else {
@@ -25,7 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to display the result on the webpage
     function displayResult(result) {
         const featureOutput = document.getElementById('feature-output');
+
         featureOutput.innerHTML += `<p>${result}</p>`;
+
+        featureOutput.innerHTML = `<p>${result}</p>`;
     }
 
     // Function to display error messages on the webpage
@@ -98,3 +105,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initParticleEffects();
 });
+
+
