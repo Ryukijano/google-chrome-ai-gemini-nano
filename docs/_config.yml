@@ -1,0 +1,7 @@
+# GitHub Pages configuration
+title: Google Chrome Built-in AI Challenge
+description: >
+  Develop a web application or Chrome Extension that uses one or more Chrome built-in AI APIs to interact with integrated models such as Gemini Nano.
+baseurl: "/google-chrome-ai-gemini-nano"
+url: "https://Ryukijano.github.io"
+theme: jekyll-theme-cayman
