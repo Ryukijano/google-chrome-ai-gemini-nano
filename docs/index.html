@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Content Creation Studio</title>
+    <link rel="stylesheet" href="{{ site.baseurl }}/style.css">
+</head>
+<body>
+    <header>
+        <h1>AI-Powered Content Creation Studio</h1>
+    </header>
+    
+    <main>
+        <!-- Idea Generation Section -->
+        <section id="idea-generation">
+            <h2>Idea Generation</h2>
+            <textarea id="prompt-input" placeholder="Enter your topic or keywords"></textarea>
+            <button id="generate-btn">Generate Ideas</button>
+            <div id="response-area"></div>
+        </section>
+
+        <!-- Content Enhancement Section -->
+        <section id="content-enhancement">
+            <h2>Content Enhancement</h2>
+            <textarea id="content-input" placeholder="Enter content to enhance"></textarea>
+            <button id="enhance-btn">Enhance Content</button>
+            <div id="enhanced-output"></div>
+        </section>
+
+        <!-- Translation Section -->
+        <section id="translation">
+            <h2>Translation</h2>
+            <textarea id="translate-input" placeholder="Enter text to translate"></textarea>
+            <select id="language-select">
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <!-- Add more language options -->
+            </select>
+            <button id="translate-btn">Translate</button>
+            <div id="translated-output"></div>
+        </section>
+
+        <!-- Error Message Display -->
+        <div id="error-message" style="display: none;"></div>
+    </main>
+
+    <footer>
+        <p>Powered by Chrome's Gemini Nano AI</p>
+    </footer>
+
+    <script src="{{ site.baseurl }}/app.js"></script>
+</body>
+</html>
