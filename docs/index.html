@@ -4,77 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-Powered Content Creation Studio</title>
-    <link rel="stylesheet" href="{{ site.baseurl }}/style.css">
-    <!-- Add imports for markdown parsing and sanitization -->
-    <script type="module">
-        import { marked } from "https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js";
-        import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
-        window.marked = marked;
-        window.DOMPurify = DOMPurify;
-    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" type="module"></script>
 </head>
 <body>
     <header>
-        <h1>AI-Powered Content Creation Studio</h1>
+        <h1>AI Content Studio</h1>
     </header>
     
     <main>
-        <!-- Idea Generation Section -->
-        <section id="idea-generation">
-            <h2>Idea Generation</h2>
-            <textarea id="prompt-input" placeholder="Enter your topic or keywords"></textarea>
-            <button id="generate-btn">Generate Ideas</button>
-            <div class="response-container">
-                <div id="response-area" class="markdown-content"></div>
-                <details>
-                    <summary>Raw Response</summary>
-                    <div id="raw-response"></div>
-                </details>
-            </div>
-        </section>
+        <div id="error-message"></div>
+        <div id="prompt-area">
+            <form>
+                <label>
+                    Prompt
+                    <textarea id="prompt-input"></textarea>
+                </label>
+                <button type="submit" id="submit-button">Submit prompt</button>
+                <button type="button" id="reset-button">Reset session</button>
+                <span id="cost"></span>
+            </form>
 
-        <!-- Content Enhancement Section -->
-        <section id="content-enhancement">
-            <h2>Content Enhancement</h2>
-            <textarea id="content-input" placeholder="Enter content to enhance"></textarea>
-            <button id="enhance-btn">Enhance Content</button>
-            <div class="response-container">
-                <div id="enhanced-output" class="markdown-content"></div>
-                <details>
-                    <summary>Raw Response</summary>
-                    <div id="enhanced-raw"></div>
-                </details>
-            </div>
-        </section>
-
-        <!-- Translation Section -->
-        <section id="translation">
-            <h2>Translation</h2>
-            <textarea id="translate-input" placeholder="Enter text to translate"></textarea>
-            <select id="language-select">
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <!-- Add more language options -->
-            </select>
-            <button id="translate-btn">Translate</button>
-            <div class="response-container">
-                <div id="translated-output" class="markdown-content"></div>
-                <details>
-                    <summary>Raw Response</summary>
-                    <div id="translated-raw"></div>
-                </details>
-            </div>
-        </section>
-
-        <!-- Error Message Display -->
-        <div id="error-message" style="display: none;"></div>
+            <h2>Response</h2>
+            <div id="response-area" class="markdown-content"></div>
+            <details>
+                <summary>Raw response</summary>
+                <div id="raw-response"></div>
+            </details>
+        </div>
     </main>
 
     <footer>
         <p>Powered by Chrome's Gemini Nano AI</p>
     </footer>
-
-    <script src="{{ site.baseurl }}/app.js"></script>
 </body>
 </html>
