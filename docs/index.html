@@ -24,7 +24,13 @@
             <h2>Idea Generation</h2>
             <textarea id="prompt-input" placeholder="Enter your topic or keywords"></textarea>
             <button id="generate-btn">Generate Ideas</button>
-            <div id="response-area" class="markdown-content"></div>
+            <div class="response-container">
+                <div id="response-area" class="markdown-content"></div>
+                <details>
+                    <summary>Raw Response</summary>
+                    <div id="raw-response"></div>
+                </details>
+            </div>
         </section>
 
         <!-- Content Enhancement Section -->
@@ -32,7 +38,13 @@
             <h2>Content Enhancement</h2>
             <textarea id="content-input" placeholder="Enter content to enhance"></textarea>
             <button id="enhance-btn">Enhance Content</button>
-            <div id="enhanced-output" class="markdown-content"></div>
+            <div class="response-container">
+                <div id="enhanced-output" class="markdown-content"></div>
+                <details>
+                    <summary>Raw Response</summary>
+                    <div id="enhanced-raw"></div>
+                </details>
+            </div>
         </section>
 
         <!-- Translation Section -->
@@ -46,7 +58,13 @@
                 <!-- Add more language options -->
             </select>
             <button id="translate-btn">Translate</button>
-            <div id="translated-output"></div>
+            <div class="response-container">
+                <div id="translated-output" class="markdown-content"></div>
+                <details>
+                    <summary>Raw Response</summary>
+                    <div id="translated-raw"></div>
+                </details>
+            </div>
         </section>
 
         <!-- Error Message Display -->
