@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-Powered Content Creation Studio</title>
     <link rel="stylesheet" href="{{ site.baseurl }}/style.css">
+    <!-- Add imports for markdown parsing and sanitization -->
+    <script type="module">
+        import { marked } from "https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js";
+        import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
+        window.marked = marked;
+        window.DOMPurify = DOMPurify;
+    </script>
 </head>
 <body>
     <header>
@@ -17,7 +24,7 @@
             <h2>Idea Generation</h2>
             <textarea id="prompt-input" placeholder="Enter your topic or keywords"></textarea>
             <button id="generate-btn">Generate Ideas</button>
-            <div id="response-area"></div>
+            <div id="response-area" class="markdown-content"></div>
         </section>
 
         <!-- Content Enhancement Section -->
@@ -25,7 +32,7 @@
             <h2>Content Enhancement</h2>
             <textarea id="content-input" placeholder="Enter content to enhance"></textarea>
             <button id="enhance-btn">Enhance Content</button>
-            <div id="enhanced-output"></div>
+            <div id="enhanced-output" class="markdown-content"></div>
         </section>
 
         <!-- Translation Section -->

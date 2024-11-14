@@ -312,3 +312,31 @@ button:hover {
     margin-top: 1rem;
 }
 
+.markdown-content {
+    background: #333;
+    padding: 1.5em;
+    border-radius: 6px;
+    margin-top: 1em;
+    white-space: pre-wrap;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+    color: var(--primary-color);
+    margin-top: 1em;
+}
+
+.markdown-content code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+.markdown-content pre {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1em;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
