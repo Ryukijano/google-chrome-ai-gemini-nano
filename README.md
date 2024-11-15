@@ -64,3 +64,95 @@ Acknowledgments
 Google Chrome Built-in AI Challenge: For inspiring the creation of this project.
 Gemini Nano Model: The AI model powering the application.
 Prompt API Playground: Served as a foundation for implementing the Prompt API.
+
+## New Features
+
+- **Contextual Memory with System Prompts:** The application now maintains a conversation history and uses a system prompt to guide AI responses.
+- **Chrome Extension for In-Page Interaction:** Users can select text on any webpage and perform AI-assisted actions like summarization, translation, and enhancement.
+- **Agent Functionality:** The app can interpret commands in the input to perform specific actions, similar to LangChain agents.
+
+## Chrome Extension Usage
+
+1. **Installation:**
+
+   - Clone the repository.
+   - Navigate to `ai-content-assistant-extension` directory.
+   - Open `chrome://extensions/` in Chrome.
+   - Enable **Developer mode**.
+   - Click **Load unpacked** and select the extension directory.
+
+2. **Usage:**
+
+   - Highlight text on any webpage.
+   - Right-click to open the context menu.
+   - Choose an action: **Summarize Selected Text**, **Translate Selected Text**, or **Enhance Selected Text**.
+   - An alert will display the AI-generated result.
+
+---
+
+### **6. Important Considerations**
+
+- **Permissions:** Ensure all necessary permissions are declared in `manifest.json`, especially `"host_permissions"` for accessing all URLs.
+- **AI Capabilities Availability:** The AI features rely on Chrome's experimental APIs. Ensure users have enabled the necessary flags and are using a compatible version of Chrome.
+- **Error Handling:** Include appropriate error messages and guide users on troubleshooting steps if AI capabilities are unavailable.
+
+---
+
+### **7. Next Steps**
+
+To further improve and expand your project:
+
+- **Customizable Settings:** Allow users to select target languages for translation or tones for content enhancement within the extension.
+- **GUI Enhancements:** Improve the user interface for better accessibility and user experience.
+- **Extension Publishing:** Once tested, consider publishing the extension in the Chrome Web Store for broader access.
+
+---
+
+By integrating these features, your application provides users with powerful, in-browser AI tools for content creation and enhancement without relying on external servers. This setup ensures quick responses and maintains user privacy, as all processing occurs locally within the browser.
+
+If you need assistance with specific implementation details or additional features, feel free to ask!## New Features
+
+- **Contextual Memory with System Prompts:** The application now maintains a conversation history and uses a system prompt to guide AI responses.
+- **Chrome Extension for In-Page Interaction:** Users can select text on any webpage and perform AI-assisted actions like summarization, translation, and enhancement.
+- **Agent Functionality:** The app can interpret commands in the input to perform specific actions, similar to LangChain agents.
+
+## Chrome Extension Usage
+
+1. **Installation:**
+
+   - Clone the repository.
+   - Navigate to `ai-content-assistant-extension` directory.
+   - Open `chrome://extensions/` in Chrome.
+   - Enable **Developer mode**.
+   - Click **Load unpacked** and select the extension directory.
+
+2. **Usage:**
+
+   - Highlight text on any webpage.
+   - Right-click to open the context menu.
+   - Choose an action: **Summarize Selected Text**, **Translate Selected Text**, or **Enhance Selected Text**.
+   - An alert will display the AI-generated result.
+
+---
+
+### **6. Important Considerations**
+
+- **Permissions:** Ensure all necessary permissions are declared in `manifest.json`, especially `"host_permissions"` for accessing all URLs.
+- **AI Capabilities Availability:** The AI features rely on Chrome's experimental APIs. Ensure users have enabled the necessary flags and are using a compatible version of Chrome.
+- **Error Handling:** Include appropriate error messages and guide users on troubleshooting steps if AI capabilities are unavailable.
+
+---
+
+### **7. Next Steps**
+
+To further improve and expand your project:
+
+- **Customizable Settings:** Allow users to select target languages for translation or tones for content enhancement within the extension.
+- **GUI Enhancements:** Improve the user interface for better accessibility and user experience.
+- **Extension Publishing:** Once tested, consider publishing the extension in the Chrome Web Store for broader access.
+
+---
+
+By integrating these features, your application provides users with powerful, in-browser AI tools for content creation and enhancement without relying on external servers. This setup ensures quick responses and maintains user privacy, as all processing occurs locally within the browser.
+
+If you need assistance with specific implementation details or additional features, feel free to ask!

@@ -18,6 +18,13 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 
     let session = null;
 
+    // Define a system prompt to guide the AI's behavior
+    const systemPrompt = "You are an AI assistant that helps users with content creation tasks.";
+
+    let conversationHistory = [
+        { role: 'system', content: systemPrompt }
+    ];
+
     // Check for API support
     if (!self.ai || !self.ai.languageModel) {
         errorMessage.style.display = "block";
@@ -55,6 +62,14 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
         const prompt = promptInput.value.trim();
         if (!prompt) return;
 
+        // Add the user's prompt to the conversation history
+        conversationHistory.push({ role: 'user', content: prompt });
+
+        // Construct the full prompt with conversation history
+        const fullPrompt = conversationHistory
+            .map(entry => `${entry.role}: ${entry.content}`)
+            .join('\n');
+
         responseArea.innerHTML = "Generating response...";
         let fullResponse = "";
 
@@ -62,13 +77,17 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
             if (!session) {
                 await initSession();
             }
-            const stream = await session.promptStreaming(prompt);
+            const stream = await session.promptStreaming(fullPrompt);
 
             for await (const chunk of stream) {
-                fullResponse = chunk.trim();
+                fullResponse += chunk;
                 responseArea.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
                 rawResponse.innerText = fullResponse;
             }
+
+            // Add the assistant's response to the conversation history
+            conversationHistory.push({ role: 'assistant', content: fullResponse });
+
         } catch (error) {
             responseArea.innerHTML = `Error: ${error.message}`;
         }
@@ -132,13 +151,17 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     // Event Listeners
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        await handlePrompt();
+        const prompt = promptInput.value.trim();
+        await agent(prompt);
     });
 
     resetButton.addEventListener("click", async () => {
         promptInput.value = "";
         responseArea.innerHTML = "";
         rawResponse.innerHTML = "";
+        conversationHistory = [
+            { role: 'system', content: systemPrompt }
+        ];
         if (session) {
             session.destroy();
             session = null;
@@ -166,5 +189,21 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     // Initialize session on load
     await initSession();
 })();
+
+async function agent(input) {
+    const lowerInput = input.toLowerCase();
+    if (lowerInput.startsWith("summarize")) {
+        const text = input.substring(9).trim();
+        await summarizeContent(text);
+    } else if (lowerInput.startsWith("translate")) {
+        const text = input.substring(9).trim();
+        await translateContent(text, "es"); // Default target language
+    } else if (lowerInput.startsWith("enhance")) {
+        const text = input.substring(7).trim();
+        await enhanceContent(text, "professional");
+    } else {
+        await handlePrompt();
+    }
+}
 
 
