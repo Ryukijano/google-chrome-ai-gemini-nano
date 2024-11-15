@@ -1,158 +1,191 @@
-// script.js
+// app.js
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js";
-import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
+import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.esm.js";
 
 (async () => {
     const errorMessage = document.getElementById("error-message");
-    const promptArea = document.getElementById("prompt-area");
     const promptInput = document.getElementById("prompt-input");
     const responseArea = document.getElementById("response-area");
-    const rawResponse = document.querySelector("details div");
+    const rawResponse = document.getElementById("raw-response");
     const form = document.querySelector("form");
     const resetButton = document.getElementById("reset-button");
-    const summaryOutput = document.getElementById('summary-output');
-    const summarizeBtn = document.getElementById('summarize-btn');
-    const summaryInput = document.getElementById('summary-input');
-    const translateBtn = document.getElementById('translate-btn');
-    const enhanceBtn = document.getElementById('enhance-btn');
+
+    // User Preferences Elements
+    const targetLanguageInput = document.getElementById("target-language");
+    const toneSelect = document.getElementById("tone-select");
 
     let session = null;
 
     // Define a system prompt to guide the AI's behavior
-    const systemPrompt = "You are an AI assistant that helps users with content creation tasks.";
+    const systemPrompt = "You are an AI assistant that helps users with content creation tasks. You can perform summarization, translation, content enhancement, and idea generation based on the user's request.";
 
     let conversationHistory = [
         { role: 'system', content: systemPrompt }
     ];
 
+    // User Preferences
+    const userPreferences = {
+        targetLanguage: 'es', // default to Spanish
+        tone: 'professional',
+    };
+
+    // Update user preferences based on inputs
+    targetLanguageInput.addEventListener('input', () => {
+        userPreferences.targetLanguage = targetLanguageInput.value.trim() || 'es';
+    });
+
+    toneSelect.addEventListener('change', () => {
+        userPreferences.tone = toneSelect.value;
+    });
+
     // Check for API support
     if (!self.ai || !self.ai.languageModel) {
         errorMessage.style.display = "block";
-        errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
+        errorMessage.innerHTML = `Your browser doesn't support the Prompt API. Please ensure you have enabled the necessary flags.`;
         return;
     }
-
-    promptArea.style.display = "block";
 
     // Initialize AI session
     async function initSession() {
         try {
-            session = await initializeAI();
+            const capabilities = await self.ai.languageModel.capabilities();
+            session = await self.ai.languageModel.create({
+                temperature: 0.7,
+                topK: 40,
+                maxOutputTokens: capabilities.maxTokens,
+            });
         } catch (error) {
             errorMessage.innerHTML = `Failed to initialize AI: ${error.message}`;
             errorMessage.style.display = "block";
         }
     }
 
-    async function initializeAI() {
-        if (!self.ai || !self.ai.languageModel) {
-            displayError("Chrome AI API not available");
-            return;
+    // Classify Intent
+    async function classifyIntent(userInput) {
+        const classificationPrompt = `
+Determine the user's intent from the following categories: Summarize, Translate, Enhance, Generate Ideas, General Query. Respond with one word indicating the intent.
+
+User input: "${userInput}"
+
+Intent:
+`;
+        if (!session) {
+            await initSession();
         }
-        const session = await self.ai.languageModel.create({
-            temperature: 0.7,
-            topK: 40,
-            // Add other initialization parameters if necessary
-        });
-        return session;
+        const response = await session.prompt(classificationPrompt);
+        return response.trim().toLowerCase();
     }
 
-    // Handle prompt submission
-    async function handlePrompt() {
-        const prompt = promptInput.value.trim();
-        if (!prompt) return;
+    // Handle user input
+    async function handleUserInput() {
+        const userInput = promptInput.value.trim();
+        if (!userInput) return;
 
-        // Add the user's prompt to the conversation history
-        conversationHistory.push({ role: 'user', content: prompt });
+        responseArea.innerHTML = "Processing...";
+        rawResponse.innerText = "";
 
-        // Construct the full prompt with conversation history
-        const fullPrompt = conversationHistory
-            .map(entry => `${entry.role}: ${entry.content}`)
-            .join('\n');
-
-        responseArea.innerHTML = "Generating response...";
-        let fullResponse = "";
+        if (!session) {
+            await initSession();
+        }
 
         try {
-            if (!session) {
-                await initSession();
+            // Get intent
+            const intent = await classifyIntent(userInput);
+
+            // Call the appropriate function based on the intent
+            if (intent.includes('summarize')) {
+                await summarizeContent(userInput);
+            } else if (intent.includes('translate')) {
+                await translateContent(userInput);
+            } else if (intent.includes('enhance')) {
+                await enhanceContent(userInput);
+            } else if (intent.includes('generate ideas')) {
+                await generateIdeas(userInput);
+            } else {
+                // Default to general assistant response
+                await generalResponse(userInput);
             }
-            const stream = await session.promptStreaming(fullPrompt);
-
-            for await (const chunk of stream) {
-                fullResponse += chunk;
-                responseArea.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
-                rawResponse.innerText = fullResponse;
-            }
-
-            // Add the assistant's response to the conversation history
-            conversationHistory.push({ role: 'assistant', content: fullResponse });
-
         } catch (error) {
-            responseArea.innerHTML = `Error: ${error.message}`;
+            displayError(error);
         }
     }
 
-    // Summarize content
+    // Implement the action functions
     async function summarizeContent(text) {
-        if (!session) {
-            await initSession();
-        }
         try {
-            const stream = await session.summarizeStreaming(text);
-            let fullResponse = '';
-
-            for await (const chunk of stream) {
-                fullResponse += chunk;
-                summaryOutput.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
-            }
+            const summary = await session.summarize(text);
+            displayResponse(summary, 'summarize');
         } catch (error) {
-            errorMessage.innerHTML = `Error: ${error.message}`;
-            errorMessage.style.display = "block";
+            displayError(error);
         }
     }
 
-    // Translate content
-    async function translateContent(text, targetLanguage) {
-        if (!session) {
-            await initSession();
-        }
+    async function translateContent(text) {
+        const targetLanguage = userPreferences.targetLanguage || 'es';
         try {
             const translation = await session.translate({
                 text: text,
                 targetLanguage: targetLanguage,
             });
-            const translatedOutput = document.getElementById('translated-output');
-            translatedOutput.innerHTML = DOMPurify.sanitize(marked.parse(translation));
+            displayResponse(translation, 'translate');
         } catch (error) {
-            errorMessage.innerHTML = `Error: ${error.message}`;
-            errorMessage.style.display = "block";
+            displayError(error);
         }
     }
 
-    // Enhance content
-    async function enhanceContent(content, tone) {
-        if (!session) {
-            await initSession();
-        }
+    async function enhanceContent(text) {
+        const style = userPreferences.tone || 'professional';
         try {
             const enhancedText = await session.rewrite({
-                text: content,
-                style: tone, // e.g., 'formal', 'casual', 'professional'
+                text: text,
+                style: style,
             });
-            const outputArea = document.getElementById('enhanced-output');
-            outputArea.innerHTML = DOMPurify.sanitize(marked.parse(enhancedText));
+            displayResponse(enhancedText, 'enhance');
         } catch (error) {
-            errorMessage.innerHTML = `Error: ${error.message}`;
-            errorMessage.style.display = "block";
+            displayError(error);
         }
+    }
+
+    async function generateIdeas(prompt) {
+        try {
+            const ideas = await session.prompt(`Generate ideas about: ${prompt}`);
+            displayResponse(ideas, 'generate ideas');
+        } catch (error) {
+            displayError(error);
+        }
+    }
+
+    async function generalResponse(prompt) {
+        try {
+            const response = await session.prompt(prompt);
+            displayResponse(response, 'general');
+        } catch (error) {
+            displayError(error);
+        }
+    }
+
+    function displayResponse(content, intent) {
+        responseArea.innerHTML = '';
+
+        const intentHeading = document.createElement('h3');
+        intentHeading.textContent = `Action: ${intent.charAt(0).toUpperCase() + intent.slice(1)}`;
+        responseArea.appendChild(intentHeading);
+
+        const contentDiv = document.createElement('div');
+        contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(content));
+        responseArea.appendChild(contentDiv);
+
+        rawResponse.innerText = content;
+    }
+
+    function displayError(error) {
+        responseArea.innerHTML = `Error: ${error.message}`;
     }
 
     // Event Listeners
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const prompt = promptInput.value.trim();
-        await agent(prompt);
+        await handleUserInput();
     });
 
     resetButton.addEventListener("click", async () => {
@@ -169,41 +202,8 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
         await initSession();
     });
 
-    summarizeBtn.addEventListener('click', () => {
-        const text = summaryInput.value;
-        summarizeContent(text);
-    });
-
-    translateBtn.addEventListener('click', () => {
-        const text = document.getElementById('translate-input').value;
-        const targetLanguage = document.getElementById('language-select').value;
-        translateContent(text, targetLanguage);
-    });
-
-    enhanceBtn.addEventListener('click', () => {
-        const content = document.getElementById('content-input').value;
-        const tone = document.getElementById('tone-select').value;
-        enhanceContent(content, tone);
-    });
-
     // Initialize session on load
     await initSession();
 })();
-
-async function agent(input) {
-    const lowerInput = input.toLowerCase();
-    if (lowerInput.startsWith("summarize")) {
-        const text = input.substring(9).trim();
-        await summarizeContent(text);
-    } else if (lowerInput.startsWith("translate")) {
-        const text = input.substring(9).trim();
-        await translateContent(text, "es"); // Default target language
-    } else if (lowerInput.startsWith("enhance")) {
-        const text = input.substring(7).trim();
-        await enhanceContent(text, "professional");
-    } else {
-        await handlePrompt();
-    }
-}
 
 

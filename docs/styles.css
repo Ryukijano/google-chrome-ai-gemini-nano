@@ -261,6 +261,8 @@ select {
     border: red solid 2px;
     padding: 1rem;
     margin: 1rem 0;
+    color: red;
+    margin-bottom: 1em;
 }
 
 #idea-output, #content-output, #enhanced-output, #translation-output {
@@ -323,6 +325,10 @@ select {
     border-radius: 6px;
     margin-top: 1em;
     color: #fff;
+    background-color: #333;
+    padding: 1em;
+    border-radius: 8px;
+    color: #fff;
 }
 
 .markdown-content h1,
@@ -347,6 +353,7 @@ select {
 
 details {
     margin-top: 1rem;
+    margin-top: 1em;
 }
 
 summary {
@@ -354,5 +361,68 @@ summary {
     padding: 0.5rem;
     background: #444;
     border-radius: 4px;
+    font-weight: bold;
+}
+
+/* User Preferences Styling */
+#preferences {
+    margin-top: 1em;
+}
+
+#preferences label {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 0.5em;
+    font-size: 1em;
+    margin-top: 0.5em;
+}
+
+/* Accessibility Improvement */
+:focus {
+    outline: 2px solid var(--primary-color);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #ffffff;
+        --text-color: #000000;
+    }
+    .markdown-content {
+        background-color: #f0f0f0;
+        color: #000;
+    }
+}
+
+header,
+footer {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+}
+
+main {
+    margin-top: 2em;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 1em;
+}
+
+#response-area {
+    margin-top: 2em;
 }
 

@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <h1>AI Content Studio</h1>
+        <h1>AI-Powered Content Creation Studio</h1>
     </header>
     
     <main>
@@ -17,57 +17,36 @@
         <div id="prompt-area">
             <form>
                 <label>
-                    Prompt
-                    <textarea id="prompt-input"></textarea>
+                    Enter your request:
+                    <textarea id="prompt-input" placeholder="E.g., 'Summarize...', 'Translate to Spanish...', 'Enhance...', 'Generate ideas about...'"></textarea>
                 </label>
-                <button type="submit" id="submit-button">Submit prompt</button>
-                <button type="button" id="reset-button">Reset session</button>
-                <span id="cost"></span>
+                <button type="submit" id="submit-button">Submit</button>
+                <button type="button" id="reset-button">Reset Session</button>
+                
+                <div id="preferences">
+                    <h3>User Preferences</h3>
+                    <label>
+                        Preferred Target Language (e.g., 'es' for Spanish):
+                        <input type="text" id="target-language" placeholder="Enter language code">
+                    </label>
+                    <label>
+                        Preferred Tone for Enhancement:
+                        <select id="tone-select">
+                            <option value="professional">Professional</option>
+                            <option value="casual">Casual</option>
+                            <option value="formal">Formal</option>
+                        </select>
+                    </label>
+                </div>
             </form>
 
             <h2>Response</h2>
             <div id="response-area" class="markdown-content"></div>
             <details>
-                <summary>Raw response</summary>
+                <summary>Raw Response</summary>
                 <div id="raw-response"></div>
             </details>
         </div>
-
-        <!-- Summarization Section -->
-        <section id="summarization">
-            <h2>Summarization</h2>
-            <textarea id="summary-input" placeholder="Enter text to summarize"></textarea>
-            <button id="summarize-btn">Summarize</button>
-            <div id="summary-output" class="markdown-content"></div>
-        </section>
-
-        <!-- Translation Section -->
-        <section id="translation">
-            <h2>Translation</h2>
-            <textarea id="translate-input" placeholder="Enter text to translate"></textarea>
-            <select id="language-select">
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <!-- Add more language options -->
-            </select>
-            <button id="translate-btn">Translate</button>
-            <div id="translated-output" class="markdown-content"></div>
-        </section>
-
-        <!-- Content Enhancement Section -->
-        <section id="content-enhancement">
-            <h2>Content Enhancement</h2>
-            <textarea id="content-input" placeholder="Enter content to enhance"></textarea>
-            <select id="tone-select">
-                <option value="professional">Professional</option>
-                <option value="casual">Casual</option>
-                <option value="formal">Formal</option>
-                <!-- Add more tone options -->
-            </select>
-            <button id="enhance-btn">Enhance Content</button>
-            <div id="enhanced-output" class="markdown-content"></div>
-        </section>
     </main>
 
     <footer>
