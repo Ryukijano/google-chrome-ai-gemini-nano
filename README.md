@@ -35,7 +35,7 @@ Access the live application here: [AI-Powered Content Creation Studio](https://R
   - Confirm availability by running `(await ai.languageModel.capabilities()).available;` in the DevTools console. It should return `"readily"`.
 
   Project Structure
-  
+
   google-chrome-ai-gemini-nano/
 ├── docs/
 │   ├── [index.html](http://_vscodecontentref_/1)       # Main HTML file
@@ -56,3 +56,11 @@ Access the live application here: [AI-Powered Content Creation Studio](https://R
 
    ```bash
    git clone https://github.com/Ryukijano/google-chrome-ai-gemini-nano.git
+
+License
+This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+
+Acknowledgments
+Google Chrome Built-in AI Challenge: For inspiring the creation of this project.
+Gemini Nano Model: The AI model powering the application.
+Prompt API Playground: Served as a foundation for implementing the Prompt API.
