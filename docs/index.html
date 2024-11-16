@@ -2,30 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI-Powered Notepad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
     <link rel="stylesheet" href="style.css">
+    <script src="app.js" type="module"></script>
 </head>
 <body>
     <header>
-        <h1>AI-Powered Notepad</h1>
+        <h1>AI Assistant</h1>
     </header>
     
     <main>
-        <div id="error-message" class="hidden"></div>
-        <div id="notepad-container">
-            <textarea id="notepad" placeholder="Write your notes here..."></textarea>
-            <button id="submit-button">Submit</button>
-        </div>
-        <div id="response-area" class="hidden">
-            <h2>AI Response:</h2>
-            <p id="ai-response"></p>
-        </div>
+        <div id="error-message"></div>
+        <form id="prompt-form">
+            <label for="prompt-input">Enter your prompt:</label>
+            <textarea id="prompt-input" placeholder="Type your prompt here..."></textarea>
+            <button type="submit">Submit</button>
+            <button type="button" id="reset-button">Reset</button>
+        </form>
+        <div id="response-area" class="markdown-content"></div>
+        <details>
+            <summary>Raw Response</summary>
+            <div id="raw-response"></div>
+        </details>
     </main>
-    
-    <footer>
-        <p>Powered by Chrome's Built-in AI</p>
-    </footer>
 
-    <script src="script.js" type="module"></script>
+    <footer>
+        <p>Powered by Chrome's Gemini Nano AI</p>
+    </footer>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
