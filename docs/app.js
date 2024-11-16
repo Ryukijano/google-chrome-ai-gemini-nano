@@ -1,6 +1,4 @@
-// app.js
-import { marked } from 'https://cdn.jsdelivr.net/npm/marked@4.2.12/marked.min.js';
-import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.0/dist/purify.min.js';
+// script.js
 
 (async () => {
     const errorMessage = document.getElementById('error-message');
@@ -12,14 +10,14 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.0/dist/purify.
     const clearButton = document.getElementById('clear-button');
     const responseArea = document.getElementById('response-area');
     const rawResponse = document.getElementById('raw-response');
-    const toggleBackgroundButton = document.getElementById('toggle-background');
-    const threeContainer = document.getElementById('three-container');
+    const details = document.querySelector('details');
 
     let session = null;
 
     // Check for AI capabilities
     if (!window.ai || !window.ai.languageModel) {
         errorMessage.textContent = "AI capabilities not available. Please ensure you're using a supported version of Chrome and have enabled the necessary flags.";
+        errorMessage.style.display = 'block';
         return;
     }
 
@@ -29,15 +27,21 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.0/dist/purify.
             session = await window.ai.languageModel.create();
         } catch (error) {
             errorMessage.textContent = `Failed to initialize AI session: ${error.message}`;
+            errorMessage.style.display = 'block';
         }
     }
 
     // Enhance Writing
     enhanceButton.addEventListener('click', async () => {
         const content = notepad.value.trim();
-        if (!content) return;
+        if (!content) {
+            alert('Please enter some text to enhance.');
+            return;
+        }
 
-        responseArea.textContent = "Processing...";
+        responseArea.style.display = 'block';
+        responseArea.textContent = "Enhancing your writing...";
+        rawResponse.textContent = '';
 
         try {
             if (!session) {
@@ -47,14 +51,14 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.0/dist/purify.
 
             const enhancedText = await session.rewrite({
                 text: content,
-                style: 'professional', // You can change or allow users to select different styles
+                style: 'professional', // You can allow users to select different styles
             });
 
             // Update the notepad with enhanced text
             notepad.value = enhancedText;
 
-            // Display the AI's response (optional)
-            responseArea.innerHTML = DOMPurify.sanitize(marked.parse(enhancedText));
+            // Display the AI's response
+            responseArea.textContent = enhancedText;
             rawResponse.textContent = enhancedText;
 
         } catch (error) {
@@ -109,70 +113,6 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.0/dist/purify.
         }
     });
 
-    // Toggle Background
-    toggleBackgroundButton.addEventListener('click', () => {
-        if (threeContainer.style.display === 'none') {
-            threeContainer.style.display = 'block';
-            toggleBackgroundButton.textContent = 'Disable Background';
-        } else {
-            threeContainer.style.display = 'none';
-            toggleBackgroundButton.textContent = 'Enable Background';
-        }
-    });
-
     // Initialize session on page load
     await initSession();
 })();
-
-// Three.js initialization
-function initThreeJS() {
-    // Scene, camera, renderer setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-        50,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-    );
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    const container = document.getElementById('three-container');
-    container.appendChild(renderer.domElement);
-
-    // Add geometric objects or visuals
-    // Example: Rotating Torus Knot
-    const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
-    const material = new THREE.MeshBasicMaterial({ color: 0x0077ff, wireframe: true });
-    const torusKnot = new THREE.Mesh(geometry, material);
-    scene.add(torusKnot);
-
-    camera.position.z = 50;
-
-    // Animation loop
-    function animate() {
-        requestAnimationFrame(animate);
-
-        // Rotate the object
-        torusKnot.rotation.x += 0.005;
-        torusKnot.rotation.y += 0.005;
-
-        renderer.render(scene, camera);
-    }
-
-    animate();
-
-    // Adjust on window resize
-    window.addEventListener('resize', () => {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-    });
-}
-
-// Call the function after the window loads
-window.addEventListener('load', initThreeJS);

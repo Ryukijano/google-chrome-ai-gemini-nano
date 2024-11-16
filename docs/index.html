@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <title>AI-Powered Notepad</title>
     <link rel="stylesheet" href="style.css">
-    <script src="app.js" type="module"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 </head>
 <body>
     <header>
@@ -22,10 +20,8 @@
                 <button id="load-button">Load Note</button>
                 <button id="download-button">Download Note</button>
                 <button id="clear-button">Clear</button>
-                <button id="toggle-background">Toggle Background</button>
             </div>
         </div>
-        <div id="three-container"></div>
         <div id="response-area"></div>
         <details>
             <summary>Raw AI Response</summary>
@@ -36,6 +32,7 @@
     <footer>
         <p>Powered by Chrome's Built-in AI</p>
     </footer>
-    <script type="module" src="app.js"></script>
+
+    <script src="script.js" type="module"></script>
 </body>
 </html>
