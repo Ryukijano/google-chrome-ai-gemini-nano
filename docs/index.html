@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Powered Content Creation Studio</title>
+    <title>AI Content Assistant</title>
     <link rel="stylesheet" href="style.css">
     <script src="app.js" type="module"></script>
 </head>
@@ -18,29 +18,12 @@
             <form>
                 <label>
                     Enter your request:
-                    <textarea id="prompt-input" placeholder="E.g., 'Summarize...', 'Translate to Spanish...', 'Enhance...', 'Generate ideas about...'"></textarea>
+                    <textarea id="prompt-input" placeholder="Try: 'Summarize this...', 'Translate to Spanish...', 'Enhance this content...'"></textarea>
                 </label>
-                <button type="submit" id="submit-button">Submit</button>
-                <button type="button" id="reset-button">Reset Session</button>
-                
-                <div id="preferences">
-                    <h3>User Preferences</h3>
-                    <label>
-                        Preferred Target Language (e.g., 'es' for Spanish):
-                        <input type="text" id="target-language" placeholder="Enter language code">
-                    </label>
-                    <label>
-                        Preferred Tone for Enhancement:
-                        <select id="tone-select">
-                            <option value="professional">Professional</option>
-                            <option value="casual">Casual</option>
-                            <option value="formal">Formal</option>
-                        </select>
-                    </label>
-                </div>
+                <button type="submit">Submit</button>
+                <button type="button" id="reset-button">Reset</button>
             </form>
 
-            <h2>Response</h2>
             <div id="response-area" class="markdown-content"></div>
             <details>
                 <summary>Raw Response</summary>
@@ -52,5 +35,6 @@
     <footer>
         <p>Powered by Chrome's Gemini Nano AI</p>
     </footer>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
