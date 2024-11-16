@@ -2,33 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant</title>
+    <title>AI-Powered Notepad</title>
     <link rel="stylesheet" href="style.css">
     <script src="app.js" type="module"></script>
 </head>
 <body>
     <header>
-        <h1>AI Assistant</h1>
+        <h1>AI-Powered Notepad</h1>
     </header>
     
     <main>
         <div id="error-message"></div>
-        <form id="prompt-form">
-            <label for="prompt-input">Enter your prompt:</label>
-            <textarea id="prompt-input" placeholder="Type your prompt here..."></textarea>
-            <button type="submit">Submit</button>
-            <button type="button" id="reset-button">Reset</button>
-        </form>
-        <div id="response-area" class="markdown-content"></div>
+        <div id="notepad-container">
+            <textarea id="notepad" placeholder="Start writing your content here..."></textarea>
+            <div id="controls">
+                <button id="enhance-button">Enhance Writing</button>
+                <button id="save-button">Save Note</button>
+                <button id="load-button">Load Note</button>
+                <button id="download-button">Download Note</button>
+                <button id="clear-button">Clear</button>
+            </div>
+        </div>
+        <div id="response-area"></div>
         <details>
-            <summary>Raw Response</summary>
+            <summary>Raw AI Response</summary>
             <div id="raw-response"></div>
         </details>
     </main>
-
+    
     <footer>
-        <p>Powered by Chrome's Gemini Nano AI</p>
+        <p>Powered by Chrome's Built-in AI</p>
     </footer>
     <script type="module" src="app.js"></script>
 </body>
