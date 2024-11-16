@@ -2,6 +2,8 @@
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js";
 import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
 
+// app.js
+
 (async () => {
     const errorMessage = document.getElementById('error-message');
     const promptForm = document.getElementById('prompt-form');
@@ -41,17 +43,15 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
                 if (!session) return;
             }
 
-            // Send the prompt to the AI model and get the response
-            const responseStream = await session.generate(prompt);
+            // Use the `promptStreaming` method to receive chunks of the response
+            const responseStream = await session.promptStreaming(prompt);
 
-            let finalResponse = '';
+            responseArea.textContent = ''; // Clear previous content
 
             // Collect the streamed response
             for await (const chunk of responseStream) {
-                finalResponse += chunk;
+                responseArea.textContent += chunk;
             }
-
-            responseArea.textContent = finalResponse;
 
         } catch (error) {
             responseArea.textContent = `Error: ${error.message}`;
@@ -61,5 +61,3 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     // Initialize session on page load
     await initSession();
 })();
-
-
