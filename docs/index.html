@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Content Assistant</title>
+    <title>AI Assistant</title>
     <link rel="stylesheet" href="style.css">
     <script src="app.js" type="module"></script>
 </head>
 <body>
     <header>
-        <h1>AI-Powered Content Creation Studio</h1>
+        <h1>AI Assistant</h1>
     </header>
     
     <main>
         <div id="error-message"></div>
-        <div id="prompt-area">
-            <form>
-                <label>
-                    Enter your request:
-                    <textarea id="prompt-input" placeholder="Try: 'Summarize this...', 'Translate to Spanish...', 'Enhance this content...'"></textarea>
-                </label>
-                <button type="submit">Submit</button>
-                <button type="button" id="reset-button">Reset</button>
-            </form>
-
-            <div id="response-area" class="markdown-content"></div>
-            <details>
-                <summary>Raw Response</summary>
-                <div id="raw-response"></div>
-            </details>
-        </div>
+        <form id="prompt-form">
+            <label for="prompt-input">Enter your prompt:</label>
+            <textarea id="prompt-input" placeholder="Type your prompt here..."></textarea>
+            <button type="submit">Submit</button>
+            <button type="button" id="reset-button">Reset</button>
+        </form>
+        <div id="response-area" class="markdown-content"></div>
+        <details>
+            <summary>Raw Response</summary>
+            <div id="raw-response"></div>
+        </details>
     </main>
 
     <footer>
