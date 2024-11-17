@@ -40,6 +40,40 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   copyLinkButton.style.display = "none";
   copyHelper.style.display = "none";
 
+  const updateSession = async () => {
+    session = await self.ai.languageModel.create({
+      temperature: Number(sessionTemperature.value),
+      topK: Number(sessionTopK.value),
+    });
+    resetUI();
+    updateStats();
+  };
+
+  const resetUI = () => {
+    responseArea.style.display = "none";
+    responseArea.innerHTML = "";
+    rawResponse.innerHTML = "";
+    problematicArea.style.display = "none";
+    copyLinkButton.style.display = "none";
+    copyHelper.style.display = "none";
+    maxTokensInfo.textContent = "";
+    temperatureInfo.textContent = "";
+    tokensLeftInfo.textContent = "";
+    tokensSoFarInfo.textContent = "";
+    topKInfo.textContent = "";
+    promptInput.focus();
+  };
+
+  const updateStats = () => {
+    if (!session) return;
+    const { maxTokens, temperature, tokensLeft, tokensSoFar, topK } = session;
+    maxTokensInfo.textContent = new Intl.NumberFormat("en-US").format(maxTokens);
+    temperatureInfo.textContent = new Intl.NumberFormat("en-US", { maximumSignificantDigits: 5 }).format(temperature);
+    tokensLeftInfo.textContent = new Intl.NumberFormat("en-US").format(tokensLeft);
+    tokensSoFarInfo.textContent = new Intl.NumberFormat("en-US").format(tokensSoFar);
+    topKInfo.textContent = new Intl.NumberFormat("en-US").format(topK);
+  };
+
   const promptModel = async (highlight = false) => {
     copyLinkButton.style.display = "none";
     copyHelper.style.display = "none";
@@ -83,25 +117,22 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     }
   };
 
-  const updateStats = () => {
-    if (!session) {
-      return;
-    }
-    const { maxTokens, temperature, tokensLeft, tokensSoFar, topK } = session;
-    maxTokensInfo.textContent = new Intl.NumberFormat("en-US").format(
-      maxTokens,
-    );
-    (temperatureInfo.textContent = new Intl.NumberFormat("en-US", {
-      maximumSignificantDigits: 5,
-    }).format(temperature)),
-      (tokensLeftInfo.textContent = new Intl.NumberFormat("en-US").format(
-        tokensLeft,
-      ));
-    tokensSoFarInfo.textContent = new Intl.NumberFormat("en-US").format(
-      tokensSoFar,
-    );
-    topKInfo.textContent = new Intl.NumberFormat("en-US").format(topK);
-  };
+  sessionTemperature.addEventListener("input", async () => {
+    await updateSession();
+  });
+
+  sessionTopK.addEventListener("input", async () => {
+    await updateSession();
+  });
+
+  if (!session) {
+    const { defaultTopK, maxTopK, defaultTemperature } =
+      await self.ai.languageModel.capabilities();
+    sessionTemperature.value = defaultTemperature;
+    sessionTopK.value = defaultTopK;
+    sessionTopK.max = maxTopK;
+    await updateSession();
+  }
 
   const params = new URLSearchParams(location.search);
   const urlPrompt = params.get("prompt");
@@ -139,21 +170,6 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     costSpan.textContent = `${cost} token${cost === 1 ? '' : 's'}`;
   });
 
-  const resetUI = () => {
-    responseArea.style.display = "none";
-    responseArea.innerHTML = "";
-    rawResponse.innerHTML = "";
-    problematicArea.style.display = "none";
-    copyLinkButton.style.display = "none";
-    copyHelper.style.display = "none";
-    maxTokensInfo.textContent = "";
-    temperatureInfo.textContent = "";
-    tokensLeftInfo.textContent = "";
-    tokensSoFarInfo.textContent = "";
-    topKInfo.textContent = "";
-    promptInput.focus();
-  };
-
   resetButton.addEventListener("click", () => {
     promptInput.value = "";
     resetUI();
@@ -182,30 +198,4 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
       copyLinkButton.textContent = text;
     }, 3000);
   });
-
-  const updateSession = async () => {
-    session = await self.ai.languageModel.create({
-      temperature: Number(sessionTemperature.value),
-      topK: Number(sessionTopK.value),
-    });
-    resetUI();
-    updateStats();
-  };
-
-  sessionTemperature.addEventListener("input", async () => {
-    await updateSession();
-  });
-
-  sessionTopK.addEventListener("input", async () => {
-    await updateSession();
-  });
-
-  if (!session) {
-    const { defaultTopK, maxTopK, defaultTemperature } =
-      await self.ai.languageModel.capabilities();
-    sessionTemperature.value = defaultTemperature;
-    sessionTopK.value = defaultTopK;
-    sessionTopK.max = maxTopK;
-    await updateSession();
-  }
 })();
