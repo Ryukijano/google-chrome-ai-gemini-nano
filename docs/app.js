@@ -8,6 +8,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     const submitButton = document.getElementById('submit-button');
     const responseContainer = document.getElementById('response-container');
     const aiResponse = document.getElementById('ai-response');
+    const responseOutput = document.getElementById('response-output');
 
     let session = null;
 
@@ -15,6 +16,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     if (!window.ai || !window.ai.languageModel) {
         errorMessage.textContent = `AI capabilities not available. Please ensure you're using a supported version of Chrome and have enabled the necessary flags.`;
         errorMessage.classList.remove('hidden');
+        alert("AI capabilities not available. Please ensure you're using a supported version of Chrome with the necessary flags enabled.");
         return;
     }
 
@@ -25,6 +27,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
         } catch (error) {
             errorMessage.textContent = `Failed to initialize AI session: ${error.message}`;
             errorMessage.classList.remove('hidden');
+            alert(`Failed to initialize AI session: ${error.message}`);
         }
     }
 
@@ -59,8 +62,25 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
         }
     }
 
+    // Submit prompt to AI model
+    async function submitPrompt() {
+        const prompt = userInput.value.trim();
+        if (!prompt) {
+            alert("Please enter a prompt.");
+            return;
+        }
+
+        try {
+            const response = await session.prompt(prompt);
+            responseOutput.textContent = response;
+        } catch (error) {
+            responseOutput.textContent = `Error: ${error.message}`;
+        }
+    }
+
     // Event Listener for Submit Button
     submitButton.addEventListener('click', submitText);
+    submitButton.addEventListener('click', submitPrompt);
 
     // Initialize session on page load
     await initSession();
