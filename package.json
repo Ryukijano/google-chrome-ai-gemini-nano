@@ -1,15 +1,19 @@
 {
-  "name": "prompt-api-playground",
+  "name": "ai-response-app",
   "version": "1.0.0",
-  "description": "This is a demo of Chrome's experimental Prompt API.",
+  "description": "A simple AI response web application using Chrome's Built-in AI APIs.",
+  "main": "script.js",
   "scripts": {
-    "start": "npx http-server",
-    "fix": "prettier --write ."
+    "start": "live-server"
   },
-  "author": "Gyanateet Dutta (gyanateet@gmail.com)",
-  "license": "Apache-2.0",
+  "keywords": [
+    "AI",
+    "Chrome Built-in AI",
+    "Web Application"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
   "devDependencies": {
-    "http-server": "^14.1.1",
-    "prettier": "^3.3.3"
+    "live-server": "^1.2.1"
   }
 }

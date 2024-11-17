@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant</title>
+    <title>AI Response App</title>
     <link rel="stylesheet" href="style.css">
-    <script src="app.js" type="module"></script>
 </head>
 <body>
     <header>
-        <h1>AI Assistant</h1>
+        <h1>AI Response App</h1>
     </header>
     
     <main>
-        <div id="error-message"></div>
-        <form id="prompt-form">
-            <label for="prompt-input">Enter your prompt:</label>
-            <textarea id="prompt-input" placeholder="Type your prompt here..."></textarea>
-            <button type="submit">Submit</button>
-            <button type="button" id="reset-button">Reset</button>
-        </form>
-        <div id="response-area" class="markdown-content"></div>
-        <details>
-            <summary>Raw Response</summary>
-            <div id="raw-response"></div>
-        </details>
+        <div id="error-message" class="hidden"></div>
+        <div id="input-container">
+            <textarea id="user-input" placeholder="Enter your prompt here..."></textarea>
+            <button id="submit-button">Submit</button>
+        </div>
+        <div id="response-container" class="hidden">
+            <h2>AI Response:</h2>
+            <p id="ai-response"></p>
+        </div>
     </main>
-
+    
     <footer>
-        <p>Powered by Chrome's Gemini Nano AI</p>
+        <p>Powered by Chrome's Built-in AI</p>
     </footer>
-    <script type="module" src="app.js"></script>
+
+    <script src="script.js" type="module"></script>
 </body>
 </html>

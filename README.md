@@ -1,158 +1,76 @@
-# AI-Powered Content Creation Studio
+# AI Response App
 
 ## Project Description
 
-The **AI-Powered Content Creation Studio** is a web application that leverages Google's Chrome built-in AI APIs and models, including Gemini Nano, to assist users in creating and enhancing content seamlessly within the browser. This application operates entirely client-side, using models downloaded to your device without the need for server calls.
-
-### APIs Utilized:
-
-- **Prompt API**: Create dynamic user prompts and interact with the AI model.
-- **Summarization API**: Distill complex information into clear insights.
-- **Translation API**: Enable multilingual translation capabilities.
-- **Rewrite API**: Improve your content with alternative options.
+The **AI Response App** is a simple web application that leverages Google's Chrome built-in AI APIs to assist users in generating AI-driven responses directly within the browser. This application operates entirely client-side, using models downloaded to your device without the need for server calls.
 
 ## Features
 
-- **Idea Generation**: Generate blog post ideas, social media captions, or marketing copy based on user-provided keywords or topics.
-- **Content Writing**: Utilize AI to create different types of content, such as articles, poems, scripts, or even code.
-- **Content Enhancement**: Offer suggestions for improving existing content (e.g., rephrasing sentences, adjusting tone, enhancing clarity).
-- **Summarization**: Summarize long pieces of text into concise summaries.
-- **Multilingual Support**: Translate content into different languages.
-
-## Demo
-
-Access the live application here: [AI-Powered Content Creation Studio](https://Ryukijano.github.io/google-chrome-ai-gemini-nano)
+- **AI Interaction:** Submit your prompts to receive AI-generated responses.
+- **Streaming Responses:** Receive real-time responses as the AI generates them.
+- **Error Handling:** Displays error messages if AI capabilities are unavailable or if other issues occur.
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Google Chrome Dev or Canary Channel**: Version 128.0.6545.0 or newer.
-- **Enable Chrome's Built-in AI Features**:
-  - Open `chrome://flags/#optimization-guide-on-device-model` and set to **Enabled BypassPerfRequirement**.
-  - Open `chrome://flags/#prompt-api-for-gemini-nano` and set to **Enabled**.
-  - Relaunch Chrome.
-  - Confirm availability by running `(await ai.languageModel.capabilities()).available;` in the DevTools console. It should return `"readily"`.
-
-  Project Structure
-
-  google-chrome-ai-gemini-nano/
-├── docs/
-│   ├── [index.html](http://_vscodecontentref_/1)       # Main HTML file
-│   ├── [app.js](http://_vscodecontentref_/2)           # JavaScript logic for AI interactions
-│   ├── [style.css](http://_vscodecontentref_/3)        # CSS styling
-│   ├── _config.yml      # GitHub Pages configuration
-│   └── CNAME            # Custom domain configuration
-├── LICENSE              # Project license
-├── [package.json](http://_vscodecontentref_/4)         # Project metadata
-├── [README.md](http://_vscodecontentref_/5)            # Project documentation
-└── [setup.md](http://_vscodecontentref_/6)             # Setup instructions for enabling AI features
-
-
+- **Google Chrome Dev or Canary Channel:** Version **128.0.6545.0** or newer.
+- **Enable Chrome's Built-in AI Features:**
+  1. Open `chrome://flags/#optimization-guide-on-device-model` and set to **Enabled BypassPerfRequirement**.
+  2. Open `chrome://flags/#prompt-api-for-gemini-nano` and set to **Enabled**.
+  3. Relaunch Chrome.
 
 ### Installation
 
-1. **Clone the Repository**:
+1. **Clone the Repository:**
 
-   ```bash
-   git clone https://github.com/Ryukijano/google-chrome-ai-gemini-nano.git
+    ```bash
+    git clone https://github.com/your-username/ai-response-app.git
+    ```
 
-License
-This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+2. **Navigate to the Project Directory:**
 
-Acknowledgments
-Google Chrome Built-in AI Challenge: For inspiring the creation of this project.
-Gemini Nano Model: The AI model powering the application.
-Prompt API Playground: Served as a foundation for implementing the Prompt API.
+    ```bash
+    cd ai-response-app
+    ```
 
-## New Features
+3. **Open `index.html` in Chrome:**
 
-- **Contextual Memory with System Prompts:** The application now maintains a conversation history and uses a system prompt to guide AI responses.
-- **Chrome Extension for In-Page Interaction:** Users can select text on any webpage and perform AI-assisted actions like summarization, translation, and enhancement.
-- **Agent Functionality:** The app can interpret commands in the input to perform specific actions, similar to LangChain agents.
+    - You can simply double-click the `index.html` file or use the following command:
 
-## Chrome Extension Usage
+    ```bash
+    open index.html
+    ```
 
-1. **Installation:**
+## Usage
 
-   - Clone the repository.
-   - Navigate to `ai-content-assistant-extension` directory.
-   - Open `chrome://extensions/` in Chrome.
-   - Enable **Developer mode**.
-   - Click **Load unpacked** and select the extension directory.
+1. **Enter Your Prompt:**
 
-2. **Usage:**
+    - Type your prompt or text into the large text area.
 
-   - Highlight text on any webpage.
-   - Right-click to open the context menu.
-   - Choose an action: **Summarize Selected Text**, **Translate Selected Text**, or **Enhance Selected Text**.
-   - An alert will display the AI-generated result.
+2. **Submit the Prompt:**
 
----
+    - Click the **Submit** button to send your prompt to the AI.
 
-### **6. Important Considerations**
+3. **View AI Response:**
 
-- **Permissions:** Ensure all necessary permissions are declared in `manifest.json`, especially `"host_permissions"` for accessing all URLs.
-- **AI Capabilities Availability:** The AI features rely on Chrome's experimental APIs. Ensure users have enabled the necessary flags and are using a compatible version of Chrome.
-- **Error Handling:** Include appropriate error messages and guide users on troubleshooting steps if AI capabilities are unavailable.
+    - The AI's response will appear below the input area in real-time.
 
----
+## Troubleshooting
 
-### **7. Next Steps**
+- **AI Capabilities Not Available:**
+  - Ensure you're using the **Chrome Dev or Canary** channel.
+  - Verify that the necessary flags are enabled (`chrome://flags`).
+  - Restart Chrome after enabling flags.
 
-To further improve and expand your project:
+- **Errors During AI Interaction:**
+  - Check the console for detailed error messages.
+  - Ensure a stable internet connection if required by the AI API.
 
-- **Customizable Settings:** Allow users to select target languages for translation or tones for content enhancement within the extension.
-- **GUI Enhancements:** Improve the user interface for better accessibility and user experience.
-- **Extension Publishing:** Once tested, consider publishing the extension in the Chrome Web Store for broader access.
+## License
 
----
+This project is licensed under the [MIT License](LICENSE).
 
-By integrating these features, your application provides users with powerful, in-browser AI tools for content creation and enhancement without relying on external servers. This setup ensures quick responses and maintains user privacy, as all processing occurs locally within the browser.
+## Acknowledgements
 
-If you need assistance with specific implementation details or additional features, feel free to ask!## New Features
-
-- **Contextual Memory with System Prompts:** The application now maintains a conversation history and uses a system prompt to guide AI responses.
-- **Chrome Extension for In-Page Interaction:** Users can select text on any webpage and perform AI-assisted actions like summarization, translation, and enhancement.
-- **Agent Functionality:** The app can interpret commands in the input to perform specific actions, similar to LangChain agents.
-
-## Chrome Extension Usage
-
-1. **Installation:**
-
-   - Clone the repository.
-   - Navigate to `ai-content-assistant-extension` directory.
-   - Open `chrome://extensions/` in Chrome.
-   - Enable **Developer mode**.
-   - Click **Load unpacked** and select the extension directory.
-
-2. **Usage:**
-
-   - Highlight text on any webpage.
-   - Right-click to open the context menu.
-   - Choose an action: **Summarize Selected Text**, **Translate Selected Text**, or **Enhance Selected Text**.
-   - An alert will display the AI-generated result.
-
----
-
-### **6. Important Considerations**
-
-- **Permissions:** Ensure all necessary permissions are declared in `manifest.json`, especially `"host_permissions"` for accessing all URLs.
-- **AI Capabilities Availability:** The AI features rely on Chrome's experimental APIs. Ensure users have enabled the necessary flags and are using a compatible version of Chrome.
-- **Error Handling:** Include appropriate error messages and guide users on troubleshooting steps if AI capabilities are unavailable.
-
----
-
-### **7. Next Steps**
-
-To further improve and expand your project:
-
-- **Customizable Settings:** Allow users to select target languages for translation or tones for content enhancement within the extension.
-- **GUI Enhancements:** Improve the user interface for better accessibility and user experience.
-- **Extension Publishing:** Once tested, consider publishing the extension in the Chrome Web Store for broader access.
-
----
-
-By integrating these features, your application provides users with powerful, in-browser AI tools for content creation and enhancement without relying on external servers. This setup ensures quick responses and maintains user privacy, as all processing occurs locally within the browser.
-
-If you need assistance with specific implementation details or additional features, feel free to ask!
+- Powered by [Chrome's Built-in AI](https://developer.chrome.com/docs/ai/built-in).
