@@ -5,8 +5,10 @@
   "scripts": {
     "start": "npx http-server"
   },
-  "author": "",
   "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
