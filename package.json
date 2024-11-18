@@ -1,6 +1,12 @@
 {
-  "name": "prompt-api-playground",
+  "name": "ai-prompt-app",
   "version": "1.0.0",
+  "description": "A simple web app using Chrome's built-in AI Prompt API.",
+  "scripts": {
+    "start": "npx http-server"
+  },
+  "author": "",
+  "license": "MIT",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
