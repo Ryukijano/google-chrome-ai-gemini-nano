@@ -1,42 +1,36 @@
-document.addEventListener('DOMContentLoaded', async () => {
+// app.js
+
+import { marked } from 'https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js';
+import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.esm.js';
+
+(async () => {
   const promptInput = document.getElementById('prompt-input');
-  const responseArea = document.getElementById('response-area');
   const submitButton = document.getElementById('submit-button');
-  const errorMessage = document.getElementById('error-message');
+  const responseArea = document.getElementById('response-area');
 
-  // Check if the AI Language Model is available
-  if (!window.ai || !window.ai.languageModel) {
-    errorMessage.textContent = 'AI capabilities are not available. Please ensure you are using a supported version of Chrome with built-in AI features enabled.';
+  if (!self.ai || !self.ai.languageModel) {
+    alert("AI capabilities not available. Please enable Chrome's built-in AI features.");
     return;
   }
 
-  // Create a new AI session
-  let session;
-  try {
-    session = await window.ai.languageModel.create();
-  } catch (error) {
-    errorMessage.textContent = `Error initializing AI model: ${error.message}`;
-    return;
-  }
+  const session = await self.ai.languageModel.create();
 
-  // Handle prompt submission
   submitButton.addEventListener('click', async () => {
     const prompt = promptInput.value.trim();
-    if (!prompt) {
-      alert('Please enter a prompt.');
-      return;
-    }
+    if (!prompt) return;
 
-    responseArea.textContent = 'Generating response...';
+    responseArea.innerHTML = 'Generating response...';
 
     try {
-      // Get the response from the AI model
-      const result = await session.prompt(prompt);
+      const stream = await session.promptStreaming(prompt);
+      let fullResponse = '';
 
-      // Display the response
-      responseArea.textContent = result;
+      for await (const chunk of stream) {
+        fullResponse += chunk;
+        responseArea.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
+      }
     } catch (error) {
-      responseArea.textContent = `Error: ${error.message}`;
+      responseArea.innerHTML = `Error: ${error.message}`;
     }
   });
-});
+})();
