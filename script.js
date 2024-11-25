@@ -1,3 +1,8 @@
+/**
+ * Copyright 2024 Google LLC
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js";
 import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
 
@@ -21,7 +26,6 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   const sessionTemperature = document.getElementById("session-temperature");
   const sessionTopK = document.getElementById("session-top-k");
 
-  promptArea.style.display = "none";
   responseArea.style.display = "none";
 
   let session = null;
@@ -31,12 +35,6 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
     return;
   }
-
-  // Initialize session with default values
-  session = await self.ai.languageModel.create({
-    temperature: Number(sessionTemperature.value),
-    topK: Number(sessionTopK.value),
-  });
 
   promptArea.style.display = "block";
   copyLinkButton.style.display = "none";
@@ -93,12 +91,12 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     maxTokensInfo.textContent = new Intl.NumberFormat("en-US").format(
       maxTokens,
     );
-    temperatureInfo.textContent = new Intl.NumberFormat("en-US", {
+    (temperatureInfo.textContent = new Intl.NumberFormat("en-US", {
       maximumSignificantDigits: 5,
-    }).format(temperature);
-    tokensLeftInfo.textContent = new Intl.NumberFormat("en-US").format(
-      tokensLeft,
-    );
+    }).format(temperature)),
+      (tokensLeftInfo.textContent = new Intl.NumberFormat("en-US").format(
+        tokensLeft,
+      ));
     tokensSoFarInfo.textContent = new Intl.NumberFormat("en-US").format(
       tokensSoFar,
     );
@@ -202,6 +200,12 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     await updateSession();
   });
 
-  // Initialize the session
-  updateStats();
+  if (!session) {
+    const { defaultTopK, maxTopK, defaultTemperature } =
+      await self.ai.languageModel.capabilities();
+    sessionTemperature.value = defaultTemperature;
+    sessionTopK.value = defaultTopK;
+    sessionTopK.max = maxTopK;
+    await updateSession();
+  }
 })();
