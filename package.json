@@ -1,15 +1,27 @@
 {
-  "name": "prompt-api-playground",
+  "name": "chrome-ai-playground",
   "version": "1.0.0",
-  "description": "This is a demo of Chrome's experimental Prompt API.",
+  "description": "A web application demonstrating Chrome's built-in AI capabilities using Gemini Nano",
+  "type": "module",
   "scripts": {
-    "start": "npx http-server",
-    "fix": "prettier --write ."
+    "start": "http-server -c-1 --cors -o",
+    "dev": "http-server -c-1 --cors",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
-  "author": "Thomas Steiner (tomac@google.com)",
+  "keywords": [
+    "chrome",
+    "ai",
+    "gemini",
+    "nano",
+    "prompt-api"
+  ],
+  "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
     "http-server": "^14.1.1",
-    "prettier": "^3.3.3"
+    "prettier": "^3.2.4"
   }
 }

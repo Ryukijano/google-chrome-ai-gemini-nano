@@ -1,7 +1,3 @@
-<!--
-  Copyright 2024 Google LLC
-  SPDX-License-Identifier: Apache-2.0
- -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark light">
     <link
-    rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>"
-  >
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>"
+    >
     <link rel="stylesheet" href="style.css">
     <title>Prompt API Playground</title>
     <script>
@@ -23,9 +19,7 @@
     <h1>✨ Prompt API Playground</h1>
     <p>
       This is a demo of Chrome's
-      <a
-        href="https://developer.chrome.com/docs/ai/built-in"
-      >built-in Prompt API</a>
+      <a href="https://developer.chrome.com/docs/ai/built-in">built-in Prompt API</a>
       powered by Gemini Nano.
     </p>
     <div id="error-message"></div>
@@ -41,17 +35,17 @@
         <div class="settings">
           <label for="session-top-k">Top-k</label>
           <input
-          id="session-top-k"
-          min="1"
-          type="number"
-        >
+            id="session-top-k"
+            min="1"
+            type="number"
+          >
           <label for="session-temperature">Temperature</label>
           <input
-          id="session-temperature"
-          type="number"
-          step="any"
-          min="0"
-        >
+            id="session-temperature"
+            type="number"
+            step="any"
+            min="0"
+          >
         </div>
       </form>
       <h2>Session stats</h2>
@@ -82,8 +76,7 @@
         <div></div>
       </details>
       <button id="copy-link-button">Copy link</button>
-      <small
-      >💡 If there's a problem with the response, select the problematic text
+      <small>💡 If there's a problem with the response, select the problematic text
         with your mouse before clicking the button.</small>
       <div id="problematic-area">
         <h2>Problematic:</h2>
