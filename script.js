@@ -32,6 +32,19 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     return;
   }
 
+  // Check GPU availability
+  try {
+    const capabilities = await self.ai.getCapabilities();
+    console.log("Initial AI Capabilities:", capabilities);
+    if (!capabilities.gpu) {
+      console.warn("GPU acceleration not available");
+      errorMessage.style.display = "block";
+      errorMessage.innerHTML += `<br>Warning: GPU acceleration is not available. Performance may be reduced.`;
+    }
+  } catch (error) {
+    console.error("Error checking capabilities:", error);
+  }
+
   // Set default values
   sessionTemperature.value = "0.7";
   sessionTopK.value = "20";
@@ -41,10 +54,12 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   copyHelper.style.display = "none";
 
   const promptModel = async (highlight = false) => {
+    console.log("Starting promptModel");
     copyLinkButton.style.display = "none";
     copyHelper.style.display = "none";
     problematicArea.style.display = "none";
     const prompt = promptInput.value.trim();
+    console.log("Prompt:", prompt);
     if (!prompt) return;
     responseArea.style.display = "block";
     const heading = document.createElement("h3");
@@ -58,18 +73,24 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     let fullResponse = "";
 
     try {
+      console.log("Checking session");
       if (!session) {
+        console.log("Creating new session");
         await updateSession();
         updateStats();
       }
+      console.log("Getting stream");
       const stream = await session.promptStreaming(prompt);
+      console.log("Got stream, starting loop");
 
       for await (const chunk of stream) {
+        console.log("Received chunk:", chunk);
         fullResponse = chunk.trim();
         p.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
         rawResponse.innerText = fullResponse;
       }
     } catch (error) {
+      console.error("Error in promptModel:", error);
       p.textContent = `Error: ${error.message}`;
     } finally {
       if (highlight) {
@@ -112,8 +133,11 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   }
 
   form.addEventListener("submit", async (e) => {
+    console.log("Form submitted");
     e.preventDefault();
+    const currentPrompt = promptInput.value;
     await promptModel();
+    promptInput.value = currentPrompt; // Restore the input value
   });
 
   promptInput.addEventListener("keydown", (e) => {
@@ -184,10 +208,26 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   });
 
   const updateSession = async () => {
-    session = await self.ai.languageModel.create({
-      temperature: Number(sessionTemperature.value),
-      topK: Number(sessionTopK.value),
+    console.log("Creating new session with:", {
+      temperature: sessionTemperature.value,
+      topK: sessionTopK.value
     });
+    try {
+      // Check if GPU is available
+      const capabilities = await self.ai.getCapabilities();
+      console.log("AI Capabilities:", capabilities);
+      
+      // Create session with GPU acceleration
+      session = await self.ai.languageModel.create({
+        temperature: Number(sessionTemperature.value),
+        topK: Number(sessionTopK.value),
+        useGpu: true, // Explicitly request GPU
+      });
+      console.log("Session created successfully");
+    } catch (error) {
+      console.error("Error creating session:", error);
+      throw error;
+    }
     resetUI();
     updateStats();
   };
