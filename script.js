@@ -1,143 +1,200 @@
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js";
 import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
 
-class ChromeAIAssistant {
-  constructor() {
-    this.initializeElements();
-    this.checkAISupport();
-    this.session = null;
+(async () => {
+  const errorMessage = document.getElementById("error-message");
+  const costSpan = document.getElementById("cost");
+  const promptArea = document.getElementById("prompt-area");
+  const problematicArea = document.getElementById("problematic-area");
+  const promptInput = document.getElementById("prompt-input");
+  const responseArea = document.getElementById("response-area");
+  const copyLinkButton = document.getElementById("copy-link-button");
+  const resetButton = document.getElementById("reset-button");
+  const copyHelper = document.querySelector("small");
+  const rawResponse = document.querySelector("details div");
+  const form = document.querySelector("form");
+  const maxTokensInfo = document.getElementById("max-tokens");
+  const temperatureInfo = document.getElementById("temperature");
+  const tokensLeftInfo = document.getElementById("tokens-left");
+  const tokensSoFarInfo = document.getElementById("tokens-so-far");
+  const topKInfo = document.getElementById("top-k");
+  const sessionTemperature = document.getElementById("session-temperature");
+  const sessionTopK = document.getElementById("session-top-k");
+
+  responseArea.style.display = "none";
+
+  let session = null;
+
+  if (!self.ai?.languageModel) {
+    errorMessage.style.display = "block";
+    errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
+    return;
   }
 
-  initializeElements() {
-    // Tab elements
-    this.tabs = document.querySelectorAll('.tab-btn');
-    this.tabContents = document.querySelectorAll('.tab-content');
-    
-    // Prompt tab elements
-    this.promptForm = document.getElementById('prompt-form');
-    this.promptInput = document.getElementById('prompt-input');
-    this.responseArea = document.getElementById('response-area');
-    this.resetButton = document.getElementById('reset-button');
-    this.temperatureInput = document.getElementById('temperature-input');
-    this.temperatureValue = document.getElementById('temperature-value');
-    this.topKInput = document.getElementById('top-k-input');
-    this.topKValue = document.getElementById('top-k-value');
-    
-    // Error message
-    this.errorMessage = document.getElementById('error-message');
-  }
+  promptArea.style.display = "block";
+  copyLinkButton.style.display = "none";
+  copyHelper.style.display = "none";
 
-  async checkAISupport() {
-    if (!self.ai?.languageModel) {
-      this.errorMessage.style.display = 'block';
-      this.errorMessage.innerHTML = `Your browser doesn't support the Prompt API. 
-        If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">
-        Early Preview Program</a> to enable it.`;
-      return false;
-    }
-    return true;
-  }
-
-  switchTab(selectedTab) {
-    // Remove active class from all tabs and contents
-    this.tabs.forEach(tab => tab.classList.remove('active'));
-    this.tabContents.forEach(content => content.classList.remove('active'));
-    
-    // Add active class to selected tab and content
-    selectedTab.classList.add('active');
-    const targetId = selectedTab.dataset.tab + '-tab';
-    document.getElementById(targetId).classList.add('active');
-  }
-
-  async updateSession() {
-    if (this.session) {
-      await this.session.destroy();
-    }
-    
-    this.session = await self.ai.languageModel.create({
-      temperature: parseFloat(this.temperatureInput.value),
-      topK: parseInt(this.topKInput.value),
-    });
-  }
-
-  async resetSession() {
-    this.promptInput.value = '';
-    this.responseArea.innerHTML = '';
-    this.responseArea.style.display = "none";
-    
-    if (this.session) {
-      await this.session.destroy();
-      this.session = null;
-    }
-    await this.updateSession();
-  }
-
-  async handlePromptSubmit(event) {
-    event.preventDefault();
-    if (!await this.checkAISupport()) return;
-
-    const prompt = this.promptInput.value.trim();
+  const promptModel = async (highlight = false) => {
+    copyLinkButton.style.display = "none";
+    copyHelper.style.display = "none";
+    problematicArea.style.display = "none";
+    const prompt = promptInput.value.trim();
     if (!prompt) return;
-
-    this.responseArea.style.display = "block";
-    
-    // Create prompt bubble
-    const promptBubble = document.createElement('div');
-    promptBubble.classList.add('speech-bubble', 'prompt');
-    promptBubble.textContent = prompt;
-    this.responseArea.appendChild(promptBubble);
-
-    // Create response bubble
-    const responseBubble = document.createElement('div');
-    responseBubble.classList.add('speech-bubble');
-    responseBubble.textContent = 'Generating response...';
-    this.responseArea.appendChild(responseBubble);
+    responseArea.style.display = "block";
+    const heading = document.createElement("h3");
+    heading.classList.add("prompt");
+    heading.textContent = prompt;
+    responseArea.append(heading);
+    const p = document.createElement("p");
+    p.classList.add("response");
+    p.textContent = "Generating response...";
+    responseArea.append(p);
+    let fullResponse = "";
 
     try {
-      if (!this.session) {
-        await this.updateSession();
+      if (!session) {
+        await updateSession();
+        updateStats();
       }
-
-      const stream = await this.session.promptStreaming(prompt);
-      let fullResponse = '';
+      const stream = await session.promptStreaming(prompt);
 
       for await (const chunk of stream) {
         fullResponse = chunk.trim();
-        responseBubble.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
+        p.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
+        rawResponse.innerText = fullResponse;
       }
     } catch (error) {
-      responseBubble.textContent = `Error: ${error.message}`;
+      p.textContent = `Error: ${error.message}`;
+    } finally {
+      if (highlight) {
+        problematicArea.style.display = "block";
+        problematicArea.querySelector("#problem").innerText =
+          decodeURIComponent(highlight).trim();
+      }
+      copyLinkButton.style.display = "inline-block";
+      copyHelper.style.display = "inline";
+      updateStats();
     }
+  };
+
+  const updateStats = () => {
+    if (!session) {
+      return;
+    }
+    const { maxTokens, temperature, tokensLeft, tokensSoFar, topK } = session;
+    maxTokensInfo.textContent = new Intl.NumberFormat("en-US").format(
+      maxTokens,
+    );
+    temperatureInfo.textContent = new Intl.NumberFormat("en-US", {
+      maximumSignificantDigits: 5,
+    }).format(temperature);
+    tokensLeftInfo.textContent = new Intl.NumberFormat("en-US").format(
+      tokensLeft,
+    );
+    tokensSoFarInfo.textContent = new Intl.NumberFormat("en-US").format(
+      tokensSoFar,
+    );
+    topKInfo.textContent = new Intl.NumberFormat("en-US").format(topK);
+  };
+
+  const params = new URLSearchParams(location.search);
+  const urlPrompt = params.get("prompt");
+  const highlight = params.get("highlight");
+  if (urlPrompt) {
+    promptInput.value = decodeURIComponent(urlPrompt).trim();
+    await promptModel(highlight);
   }
 
-  initializeEventListeners() {
-    // Tab switching
-    this.tabs.forEach(tab => {
-      tab.addEventListener('click', () => this.switchTab(tab));
-    });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await promptModel();
+  });
 
-    // Prompt form submission
-    this.promptForm.addEventListener('submit', (e) => this.handlePromptSubmit(e));
-    
-    // Reset button
-    this.resetButton.addEventListener('click', () => this.resetSession());
-    
-    // Settings controls
-    this.temperatureInput.addEventListener('input', (e) => {
-      this.temperatureValue.textContent = e.target.value;
-      this.updateSession();
-    });
-    
-    this.topKInput.addEventListener('input', (e) => {
-      this.topKValue.textContent = e.target.value;
-      this.updateSession();
-    });
-  }
-}
+  promptInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      form.dispatchEvent(new Event("submit"));
+    }
+  });
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', async () => {
-  const app = new ChromeAIAssistant();
-  await app.updateSession();
-  app.initializeEventListeners();
-});
+  promptInput.addEventListener("focus", () => {
+    promptInput.select();
+  });
+
+  promptInput.addEventListener("input", async () => {
+    const value = promptInput.value.trim();
+    if (!value) {
+      return;
+    }
+    const cost = await session.countPromptTokens(value);
+    if (!cost) {
+      return;
+    }
+    costSpan.textContent = `${cost} token${cost === 1 ? '' : 's'}`;
+  });
+
+  const resetUI = () => {
+    responseArea.style.display = "none";
+    responseArea.innerHTML = "";
+    rawResponse.innerHTML = "";
+    problematicArea.style.display = "none";
+    copyLinkButton.style.display = "none";
+    copyHelper.style.display = "none";
+    maxTokensInfo.textContent = "";
+    temperatureInfo.textContent = "";
+    tokensLeftInfo.textContent = "";
+    tokensSoFarInfo.textContent = "";
+    topKInfo.textContent = "";
+    promptInput.focus();
+  };
+
+  resetButton.addEventListener("click", () => {
+    promptInput.value = "";
+    resetUI();
+    session.destroy();
+    session = null;
+    updateSession();
+  });
+
+  copyLinkButton.addEventListener("click", () => {
+    const prompt = promptInput.value.trim();
+    if (!prompt) return;
+    const url = new URL(self.location.href);
+    url.searchParams.set("prompt", encodeURIComponent(prompt));
+    const selection = getSelection().toString() || "";
+    if (selection) {
+      url.searchParams.set("highlight", encodeURIComponent(selection));
+    } else {
+      url.searchParams.delete("highlight");
+    }
+    navigator.clipboard.writeText(url.toString()).catch((err) => {
+      alert("Failed to copy link: ", err);
+    });
+    const text = copyLinkButton.textContent;
+    copyLinkButton.textContent = "Copied";
+    setTimeout(() => {
+      copyLinkButton.textContent = text;
+    }, 3000);
+  });
+
+  const updateSession = async () => {
+    session = await self.ai.languageModel.create({
+      temperature: Number(sessionTemperature.value),
+      topK: Number(sessionTopK.value),
+    });
+    resetUI();
+    updateStats();
+  };
+
+  sessionTemperature.addEventListener("input", async () => {
+    await updateSession();
+  });
+
+  sessionTopK.addEventListener("input", async () => {
+    await updateSession();
+  });
+
+  // Initialize the session
+  await updateSession();
+})();
