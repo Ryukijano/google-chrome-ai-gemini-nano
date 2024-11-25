@@ -26,7 +26,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 
   let session = null;
 
-  if (!self.ai?.languageModel) {
+  if (!self.ai || !self.ai.languageModel) {
     errorMessage.style.display = "block";
     errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
     return;
@@ -50,11 +50,11 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     if (!prompt) return;
     responseArea.style.display = "block";
     const heading = document.createElement("h3");
-    heading.classList.add("prompt");
+    heading.classList.add("prompt", "speech-bubble");
     heading.textContent = prompt;
     responseArea.append(heading);
     const p = document.createElement("p");
-    p.classList.add("response");
+    p.classList.add("response", "speech-bubble");
     p.textContent = "Generating response...";
     responseArea.append(p);
     let fullResponse = "";
