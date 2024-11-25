@@ -2,25 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Prompt API Playground Clone</title>
+  <title>Google Chrome AI Gemini Nano App</title>
   <link rel="stylesheet" href="style.css">
-  <script src="script.js" type="module"></script>
+  <script src="script.js" type="module" defer></script>
 </head>
 <body>
-  <h1>✨ Prompt API Playground Clone</h1>
-  <div id="error-message"></div>
+  <h1>✨ Google Chrome AI Gemini Nano App</h1>
+  
+  <div id="error-message" class="hidden"></div>
+  
   <div id="prompt-area">
     <form id="prompt-form">
-      <label>
-        Prompt
-        <textarea id="prompt-input" placeholder="Enter your prompt here"></textarea>
-      </label>
-      <button type="submit" id="submit-button">Submit prompt</button>
-      <button type="button" id="reset-button">Reset session</button>
+      <label for="prompt-input">Prompt:</label>
+      <textarea id="prompt-input" placeholder="Enter your prompt here"></textarea>
+      <div class="buttons">
+        <button type="submit" id="submit-button">Submit Prompt</button>
+        <button type="button" id="reset-button">Reset Session</button>
+      </div>
     </form>
   </div>
-  <div id="response-area" style="display:none;">
+  
+  <div id="response-area" class="hidden">
     <!-- AI response will be displayed here -->
   </div>
+  
+  <div id="stats" class="hidden">
+    <p>Cost: <span id="cost">0</span> tokens</p>
+    <p>Temperature: <span id="temperature">0.7</span></p>
+    <p>Tokens Left: <span id="tokens-left">1000</span></p>
+    <p>Tokens So Far: <span id="tokens-so-far">0</span></p>
+  </div>
+  
+  <div id="problematic-area" class="hidden">
+    <h3>Problem:</h3>
+    <p id="problem"></p>
+  </div>
+  
+  <button id="copy-link-button" class="hidden">Copy Link</button>
+  <small class="hidden">Link Copied!</small>
+  
+  <details>
+    <summary>Raw Response</summary>
+    <div id="raw-response"></div>
+  </details>
 </body>
 </html>

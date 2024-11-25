@@ -6,20 +6,64 @@ body {
   max-width: 800px;
 }
 
+.hidden {
+  display: none;
+}
+
 #prompt-input {
   width: 100%;
   height: 100px;
   margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-#submit-button, #reset-button {
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+
+#submit-button, #reset-button, #copy-link-button {
   padding: 10px 20px;
-  margin-right: 10px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 #response-area {
   margin-top: 20px;
   padding: 10px;
   border: 1px solid #ccc;
-  min-height: 100px;
+  min-height: 150px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.speech-bubble {
+  position: relative;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.prompt {
+  background-color: #e0f7fa;
+}
+
+.response {
+  background-color: #ffe0b2;
+}
+
+#problematic-area {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #f44336;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+small {
+  color: green;
+  margin-left: 10px;
 }
