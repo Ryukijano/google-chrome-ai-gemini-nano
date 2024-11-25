@@ -2,27 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Prompt App</title>
+  <title>Prompt API Playground Clone</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" type="module"></script>
 </head>
 <body>
-  <h1>AI Prompt App</h1>
-  <textarea id="prompt-input" placeholder="Enter your prompt here"></textarea>
-  <button id="submit-button">Submit</button>
-  <button id="reset-button">Reset Session</button>
-  <div id="response-area"></div>
-
-  <h2>Session Stats</h2>
-  <table>
-    <tr>
-      <td>Temperature:</td>
-      <td id="temperature-info"></td>
-    </tr>
-    <tr>
-      <td>Tokens Used:</td>
-      <td id="tokens-info"></td>
-    </tr>
-  </table>
+  <h1>✨ Prompt API Playground Clone</h1>
+  <div id="error-message"></div>
+  <div id="prompt-area">
+    <form id="prompt-form">
+      <label>
+        Prompt
+        <textarea id="prompt-input" placeholder="Enter your prompt here"></textarea>
+      </label>
+      <button type="submit" id="submit-button">Submit prompt</button>
+      <button type="button" id="reset-button">Reset session</button>
+    </form>
+  </div>
+  <div id="response-area" style="display:none;">
+    <!-- AI response will be displayed here -->
+  </div>
 </body>
 </html>

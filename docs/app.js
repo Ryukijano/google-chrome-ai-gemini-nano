@@ -1,37 +1,43 @@
 // app.js
 
-import { marked } from 'https://cdn.jsdelivr.net/npm/marked@4.3.0/lib/marked.esm.js';
-import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.1/dist/purify.esm.js';
+import { marked } from 'https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js';
+import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.1/dist/purify.min.js';
 
 (async () => {
+  // DOM elements
+  const errorMessage = document.getElementById('error-message');
+  const promptArea = document.getElementById('prompt-area');
+  const promptForm = document.getElementById('prompt-form');
   const promptInput = document.getElementById('prompt-input');
-  const submitButton = document.getElementById('submit-button');
-  const resetButton = document.getElementById('reset-button');
   const responseArea = document.getElementById('response-area');
-  const temperatureInfo = document.getElementById('temperature-info');
-  const tokensInfo = document.getElementById('tokens-info');
+  const resetButton = document.getElementById('reset-button');
 
+  let session = null;
+
+  // Check if AI capabilities are available
   if (!self.ai || !self.ai.languageModel) {
-    alert("AI capabilities not available. Please enable Chrome's built-in AI features.");
+    errorMessage.style.display = 'block';
+    errorMessage.innerHTML = `Your browser doesn't support the Prompt API. Please ensure you have enabled it.`;
     return;
   }
 
-  let session = await self.ai.languageModel.create({
-    temperature: 0.7,
-  });
+  promptArea.style.display = 'block';
 
-  temperatureInfo.textContent = session.options.temperature;
-
-  const displayResponse = (content) => {
-    responseArea.innerHTML = DOMPurify.sanitize(marked.parse(content));
+  // Function to update the session
+  const updateSession = async () => {
+    session = await self.ai.languageModel.create();
   };
 
-  let totalTokensUsed = 0;
+  // Initialize session
+  await updateSession();
 
-  submitButton.addEventListener('click', async () => {
+  // Function to handle prompt submission
+  const handlePromptSubmit = async (event) => {
+    event.preventDefault();
     const prompt = promptInput.value.trim();
     if (!prompt) return;
 
+    responseArea.style.display = 'block';
     responseArea.innerHTML = 'Generating response...';
 
     try {
@@ -40,19 +46,21 @@ import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.1.1/dist/purify.
 
       for await (const chunk of stream) {
         fullResponse += chunk;
-        displayResponse(fullResponse);
-        const tokensUsed = await session.countTokens(chunk);
-        totalTokensUsed += tokensUsed;
-        tokensInfo.textContent = totalTokensUsed;
+        responseArea.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
       }
     } catch (error) {
       responseArea.innerHTML = `Error: ${error.message}`;
     }
-  });
+  };
 
+  // Handle form submission
+  promptForm.addEventListener('submit', handlePromptSubmit);
+
+  // Reset session
   resetButton.addEventListener('click', async () => {
     await session.destroy();
-    session = await self.ai.languageModel.create();
+    await updateSession();
+    responseArea.style.display = 'none';
     responseArea.innerHTML = '';
     promptInput.value = '';
   });
