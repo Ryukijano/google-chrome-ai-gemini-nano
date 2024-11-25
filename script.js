@@ -4,9 +4,8 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
 class ChromeAIAssistant {
   constructor() {
     this.initializeElements();
-    this.initializeEventListeners();
     this.checkAISupport();
-    this.currentSession = null;
+    this.session = null;
   }
 
   initializeElements() {
@@ -26,30 +25,6 @@ class ChromeAIAssistant {
     
     // Error message
     this.errorMessage = document.getElementById('error-message');
-  }
-
-  initializeEventListeners() {
-    // Tab switching
-    this.tabs.forEach(tab => {
-      tab.addEventListener('click', () => this.switchTab(tab));
-    });
-
-    // Prompt form submission
-    this.promptForm.addEventListener('submit', (e) => this.handlePromptSubmit(e));
-    
-    // Reset button
-    this.resetButton.addEventListener('click', () => this.resetSession());
-    
-    // Settings controls
-    this.temperatureInput.addEventListener('input', (e) => {
-      this.temperatureValue.textContent = e.target.value;
-      this.updateSession();
-    });
-    
-    this.topKInput.addEventListener('input', (e) => {
-      this.topKValue.textContent = e.target.value;
-      this.updateSession();
-    });
   }
 
   async checkAISupport() {
@@ -75,13 +50,11 @@ class ChromeAIAssistant {
   }
 
   async updateSession() {
-    if (!await this.checkAISupport()) return;
-
-    if (this.currentSession) {
-      await this.currentSession.destroy();
+    if (this.session) {
+      await this.session.destroy();
     }
-
-    this.currentSession = await self.ai.languageModel.createSession({
+    
+    this.session = await self.ai.languageModel.create({
       temperature: parseFloat(this.temperatureInput.value),
       topK: parseInt(this.topKInput.value),
     });
@@ -90,6 +63,12 @@ class ChromeAIAssistant {
   async resetSession() {
     this.promptInput.value = '';
     this.responseArea.innerHTML = '';
+    this.responseArea.style.display = "none";
+    
+    if (this.session) {
+      await this.session.destroy();
+      this.session = null;
+    }
     await this.updateSession();
   }
 
@@ -100,6 +79,8 @@ class ChromeAIAssistant {
     const prompt = this.promptInput.value.trim();
     if (!prompt) return;
 
+    this.responseArea.style.display = "block";
+    
     // Create prompt bubble
     const promptBubble = document.createElement('div');
     promptBubble.classList.add('speech-bubble', 'prompt');
@@ -109,15 +90,15 @@ class ChromeAIAssistant {
     // Create response bubble
     const responseBubble = document.createElement('div');
     responseBubble.classList.add('speech-bubble');
-    responseBubble.textContent = 'Thinking...';
+    responseBubble.textContent = 'Generating response...';
     this.responseArea.appendChild(responseBubble);
 
     try {
-      if (!this.currentSession) {
+      if (!this.session) {
         await this.updateSession();
       }
 
-      const stream = await this.currentSession.promptStreaming(prompt);
+      const stream = await this.session.promptStreaming(prompt);
       let fullResponse = '';
 
       for await (const chunk of stream) {
@@ -128,9 +109,35 @@ class ChromeAIAssistant {
       responseBubble.textContent = `Error: ${error.message}`;
     }
   }
+
+  initializeEventListeners() {
+    // Tab switching
+    this.tabs.forEach(tab => {
+      tab.addEventListener('click', () => this.switchTab(tab));
+    });
+
+    // Prompt form submission
+    this.promptForm.addEventListener('submit', (e) => this.handlePromptSubmit(e));
+    
+    // Reset button
+    this.resetButton.addEventListener('click', () => this.resetSession());
+    
+    // Settings controls
+    this.temperatureInput.addEventListener('input', (e) => {
+      this.temperatureValue.textContent = e.target.value;
+      this.updateSession();
+    });
+    
+    this.topKInput.addEventListener('input', (e) => {
+      this.topKValue.textContent = e.target.value;
+      this.updateSession();
+    });
+  }
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-  new ChromeAIAssistant();
+document.addEventListener('DOMContentLoaded', async () => {
+  const app = new ChromeAIAssistant();
+  await app.updateSession();
+  app.initializeEventListeners();
 });
