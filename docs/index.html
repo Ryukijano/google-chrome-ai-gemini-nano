@@ -4,12 +4,25 @@
   <meta charset="UTF-8">
   <title>AI Prompt App</title>
   <link rel="stylesheet" href="style.css">
-  <script src="app.js" type="module"></script>
+  <script src="script.js" type="module"></script>
 </head>
 <body>
   <h1>AI Prompt App</h1>
   <textarea id="prompt-input" placeholder="Enter your prompt here"></textarea>
   <button id="submit-button">Submit</button>
+  <button id="reset-button">Reset Session</button>
   <div id="response-area"></div>
+
+  <h2>Session Stats</h2>
+  <table>
+    <tr>
+      <td>Temperature:</td>
+      <td id="temperature-info"></td>
+    </tr>
+    <tr>
+      <td>Tokens Used:</td>
+      <td id="tokens-info"></td>
+    </tr>
+  </table>
 </body>
 </html>

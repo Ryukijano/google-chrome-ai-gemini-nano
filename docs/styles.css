@@ -12,12 +12,14 @@ body {
   margin-bottom: 10px;
 }
 
-#submit-button {
+#submit-button, #reset-button {
   padding: 10px 20px;
+  margin-right: 10px;
 }
 
 #response-area {
   margin-top: 20px;
   padding: 10px;
   border: 1px solid #ccc;
+  min-height: 100px;
 }
