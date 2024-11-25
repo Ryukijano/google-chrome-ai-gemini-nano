@@ -21,6 +21,7 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   const sessionTemperature = document.getElementById("session-temperature");
   const sessionTopK = document.getElementById("session-top-k");
 
+  promptArea.style.display = "none";
   responseArea.style.display = "none";
 
   let session = null;
@@ -30,6 +31,12 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
     errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
     return;
   }
+
+  // Initialize session with default values
+  session = await self.ai.languageModel.create({
+    temperature: Number(sessionTemperature.value),
+    topK: Number(sessionTopK.value),
+  });
 
   promptArea.style.display = "block";
   copyLinkButton.style.display = "none";
@@ -196,5 +203,5 @@ import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.
   });
 
   // Initialize the session
-  await updateSession();
+  updateStats();
 })();
