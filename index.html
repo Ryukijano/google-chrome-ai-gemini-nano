@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark light">
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>"
+    >
+    <link rel="stylesheet" href="style.css">
+    <title>Chrome AI Assistant</title>
+    <script>
+      if (!isSecureContext) location.protocol = "https:";
+    </script>
+    <script src="script.js" type="module"></script>
+  </head>
+  <body>
+    <header>
+      <h1>🤖 Chrome AI Assistant</h1>
+      <p>
+        Powered by Chrome's Built-in AI with Gemini Nano
+      </p>
+    </header>
+
+    <div id="error-message"></div>
+    
+    <main id="app-container">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="prompt">Prompt</button>
+        <button class="tab-btn" data-tab="summarize">Summarize</button>
+        <button class="tab-btn" data-tab="write">Write</button>
+        <button class="tab-btn" data-tab="rewrite">Rewrite</button>
+      </div>
+
+      <div id="prompt-tab" class="tab-content active">
+        <form id="prompt-form">
+          <label>
+            Ask anything
+            <textarea id="prompt-input" placeholder="Enter your prompt here..."></textarea>
+          </label>
+          <div class="controls">
+            <button type="submit" id="submit-button">Generate</button>
+            <button type="button" id="reset-button">Reset</button>
+          </div>
+          <div class="settings">
+            <label>
+              Temperature
+              <input id="temperature-input" type="range" min="0" max="1" step="0.1" value="0.7">
+              <span id="temperature-value">0.7</span>
+            </label>
+            <label>
+              Top-k
+              <input id="top-k-input" type="range" min="1" max="40" value="20">
+              <span id="top-k-value">20</span>
+            </label>
+          </div>
+        </form>
+        <div id="response-area"></div>
+      </div>
+
+      <div id="summarize-tab" class="tab-content">
+        <form id="summarize-form">
+          <label>
+            Text to summarize
+            <textarea placeholder="Paste your text here to get a concise summary..."></textarea>
+          </label>
+          <button type="submit">Summarize</button>
+        </form>
+        <div class="summary-result"></div>
+      </div>
+
+      <div id="write-tab" class="tab-content">
+        <form id="write-form">
+          <label>
+            Writing prompt
+            <textarea placeholder="Describe what you want to write..."></textarea>
+          </label>
+          <button type="submit">Generate</button>
+        </form>
+        <div class="write-result"></div>
+      </div>
+
+      <div id="rewrite-tab" class="tab-content">
+        <form id="rewrite-form">
+          <label>
+            Text to rewrite
+            <textarea placeholder="Enter text to get alternative versions..."></textarea>
+          </label>
+          <button type="submit">Rewrite</button>
+        </form>
+        <div class="rewrite-result"></div>
+      </div>
+    </main>
+
+    <footer>
+      <p>Built for the Google Chrome Built-in AI Challenge</p>
+    </footer>
+  </body>
+</html>
