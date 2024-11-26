@@ -1,0 +1,92 @@
+﻿CHROME
+	Update #2
+	Built-in AI Early Preview Program
+Feedback and what’s next
+	Author
+	Kenji Baheux
+	Contact
+	See this section
+	Last-updated
+	Aug 8, 2024
+See changelog.
+	Intro
+Thanks for participating in our Early Preview Program for built-in AI capabilities (article, talk at Google I/O 2024). It's been a little over a month since the Prompt API became available for exploration purposes, and we've loved seeing your reactions and #webAI demos!  
+
+
+📣
+	Know of other folks who would love to join this program? Or perhaps you got access to this document from a friend? 
+
+
+Sign up to get the latest updates directly in your inbox.
+	
+
+In this update, we'd love to hear your feedback on the program, your input for future APIs, and give you a sneak peek about what's next.
+Survey
+We’d appreciate your feedback to help us better understand:
+* Your experience setting up the Gemini Nano related APIs (Prompt API, Summarization API): Share if you had difficulty setting up these APIs and whether you were able to overcome any initial challenges.
+* Your satisfaction with the built-in AI API: How well are our API working for you in terms of performance, stability, and quality of output?
+* Your interest in a Chrome extension version: we are exploring a faster way to release the Prompt API, and potentially other APIs as well, in the form of a Chrome extension API. Let us know how interested you are in this.
+* Your insights into use cases: Thanks to your participation in this program, we've identified common text-based uses for the API. Help us optimize our roadmap by sharing how relevant these use cases are to your current needs. Also, let us know if there are other text-based or non-text-based use cases we should consider.
+What’s next
+Prompt API
+Upcoming enhancements and changes
+We’ve recently published an explainer for the Prompt API. As you will see, the API described in the explainer differs from what’s currently implemented in Chrome. There are changes to existing methods and enhancements that we hope to implement over time. We hope that these proposed changes and enhancements align with the feedback we’ve received from you and other interested parties.
+
+
+📣 Next steps
+1. Take a look at the Prompt API explainer.
+2. Share your thoughts by filing an issue, or by reaching out privately if public feedback isn’t an option.
+
+
+📑
+	Web API explainer
+	An explainer is a document describing a proposed web platform feature. It evolves as the design progresses, starting as a simple collection of goals and a potential solution, and eventually facilitating discussion and consensus-building by clarifying the user-facing problem, proposed solution, and practical applications.
+	Towards an initial release
+We're exploring  releasing the Prompt API for Chrome extensions as a stepping stone before its full web platform release. This would allow us to get the API in your hands sooner, gather valuable feedback, and address any issues early on.  Real-world use via Chrome extensions will provide deeper insights than isolated prototypes, ultimately leading to a higher quality product for the full web platform release. 
+
+
+In addition, the web platform presents unique challenges, such as fostering safe and responsible AI use in an open environment and facilitating compatibility across browsers. These challenges necessitate careful planning and testing, making the Chrome extension phase a valuable learning opportunity before the full web platform release. Note that the API may still evolve as we progress towards the web platform release.
+
+
+📣 Next steps
+* Share your feedback, concerns, or questions about this approach via the survey. 
+Translation API
+Translation is one of the text-based use cases that we identified early on. The team has been making great progress on implementing this API and while it’s not yet testable your feedback on the API and use cases will help us make critical adjustments for the initial release.
+
+
+📣 Next steps
+1. Check the translation API explainer for more details.
+2. Share your thoughts by filing an issue, or by reaching out privately if public feedback isn’t an option.
+Appendix
+General feedback
+Quality or technical issues
+If you experience quality or technical issues, consider sharing details. Your reports will help us refine and improve our models, APIs, and components in the AI runtime layer, to ensure safety and responsible use.
+* Handy shortlink: goo.gle/chrome-ai-dev-preview-feedback-quality
+Feedback about Chrome’s behavior / implementation of the Prompt API
+If you want to report bugs or other  issues related to Chrome’s behavior / implementation of the Prompt API, provide as many details as possible (e.g. repro steps) in a public chromium bug report.
+Feedback about the APIs
+If you want to report ergonomic issues or other problems related to one of the built-in AI APIs, see if there is any related issue first and if not then file a public spec issue:
+* Prompt API spec issues
+* Translation API spec issues
+Other feedback
+For other questions or issues, reach out directly by sending an email to the mailing list owners (chrome-ai-dev-preview+owners@chromium.org). We’ll do our best to be as responsive as possible or update existing documents when more appropriate.
+FAQ
+Participation in the Early Preview Program
+Opt-out and unsubscribe
+To opt-out from the Early Preview Program, simply send an email to:
+* chrome-ai-dev-preview+unsubscribe@chromium.org.
+Opt-in
+If you know someone who would like to join the program, ask them to fill out this form and that they communicate their eagerness to provide feedback when answering the last question of the survey!
+Other updates
+Links to all previous updates and surveys we’ve sent can be found in The Context Index also available via goo.gle/chrome-ai-dev-preview-index
+Changelog
+Date
+	Changes
+	Jul 10, 2024
+	* First version.
+	Jul 11, 2024
+	* Replaced back issues table with a link to an index document.
+	Jul 19, 2024
+	* Added links for reporting implementation issues, and spec issues.
+	Aug 8, 2024
+	* Adjusted language for the survey to cover other APIs beyond the Prompt API.

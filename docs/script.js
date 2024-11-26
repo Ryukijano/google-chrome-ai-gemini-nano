@@ -70,6 +70,8 @@ window.addEventListener('resize', () => {
 
 // AI Studio functionality
 let session = null;
+let writerSession = null;
+let rewriterSession = null;
 let currentMode = 'chat';
 let selectedStyle = '';
 
@@ -94,23 +96,36 @@ const modeDescriptions = {
 async function initAPIs() {
   try {
     if (!self.ai?.languageModel) {
-      throw new Error('AI APIs not available. Please enable AI features in Chrome.');
+      throw new Error('AI APIs not available. Please enable AI features in Chrome Canary/Dev (chrome://flags)');
     }
 
     const capabilities = await self.ai.getCapabilities();
     console.log('AI Capabilities:', capabilities);
 
-    // Create session with both temperature and topK
+    if (capabilities.available !== 'readily') {
+      throw new Error('Gemini Nano is not ready. Please ensure you have sufficient storage (22GB) and GPU memory (4GB).');
+    }
+
+    // Initialize the base language model session
     session = await self.ai.languageModel.createSession({
       temperature: 0.7,
       topK: 20
     });
-    
+
+    // Initialize writer and rewriter if available
+    if (self.ai.writer) {
+      writerSession = await self.ai.writer.create();
+    }
+    if (self.ai.rewriter) {
+      rewriterSession = await self.ai.rewriter.create();
+    }
+
     // Update UI to reflect initial values
     temperatureSlider.value = "0.7";
     temperatureValue.textContent = "0.7";
     
     enableInterface();
+    console.log('AI APIs initialized successfully');
   } catch (error) {
     console.error('Initialization error:', error);
     showError(error.message);
@@ -154,19 +169,41 @@ async function processInput(text) {
     addMessage(text, true);
     promptInput.value = '';
 
-    let prompt = text;
-    if (currentMode === 'rewrite' && selectedStyle) {
-      prompt = `Rewrite the following text in a ${selectedStyle} style:\n\n${text}`;
+    let result;
+    
+    switch (currentMode) {
+      case 'write':
+        if (!writerSession) {
+          throw new Error('Writer API not available. Please enable it in chrome://flags');
+        }
+        result = await writerSession.write(text, {
+          temperature: parseFloat(temperatureSlider.value)
+        });
+        break;
+        
+      case 'rewrite':
+        if (!rewriterSession) {
+          throw new Error('Rewriter API not available. Please enable it in chrome://flags');
+        }
+        const style = selectedStyle || 'professional';
+        result = await rewriterSession.rewrite(text, {
+          style,
+          temperature: parseFloat(temperatureSlider.value)
+        });
+        break;
+        
+      case 'chat':
+      default:
+        result = await session.sendMessage(text, {
+          temperature: parseFloat(temperatureSlider.value),
+          topK: 20,
+          maxTokens: 1000
+        });
+        break;
     }
 
-    const result = await session.sendMessage(prompt, {
-      temperature: parseFloat(temperatureSlider.value),
-      topK: 20,
-      maxTokens: 1000
-    });
-
     hideTypingIndicator();
-    addMessage(result.text);
+    addMessage(result.text || result);
   } catch (error) {
     console.error('Processing error:', error);
     hideTypingIndicator();
@@ -175,28 +212,13 @@ async function processInput(text) {
     // If session error, try to reinitialize
     if (error.message.includes('session')) {
       session = null;
+      writerSession = null;
+      rewriterSession = null;
       await initAPIs();
     }
   } finally {
     enableInterface();
   }
-}
-
-function updateMode(mode) {
-  currentMode = mode;
-  modeButtons.forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.mode === mode);
-  });
-  modeDescription.textContent = modeDescriptions[mode];
-  rewriteOptions.classList.toggle('visible', mode === 'rewrite');
-  
-  // Update placeholder text based on mode
-  const placeholders = {
-    chat: 'Type your message here...',
-    write: 'Describe what you want to create...',
-    rewrite: 'Paste your text here to rewrite it...'
-  };
-  promptInput.placeholder = placeholders[mode];
 }
 
 function disableInterface() {
@@ -234,6 +256,23 @@ styleButtons.forEach(btn => {
 temperatureSlider.addEventListener('input', () => {
   temperatureValue.textContent = temperatureSlider.value;
 });
+
+function updateMode(mode) {
+  currentMode = mode;
+  modeButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+  modeDescription.textContent = modeDescriptions[mode];
+  rewriteOptions.classList.toggle('visible', mode === 'rewrite');
+  
+  // Update placeholder text based on mode
+  const placeholders = {
+    chat: 'Type your message here...',
+    write: 'Describe what you want to create...',
+    rewrite: 'Paste your text here to rewrite it...'
+  };
+  promptInput.placeholder = placeholders[mode];
+}
 
 // Initialize
 initAPIs();
