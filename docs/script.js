@@ -93,16 +93,26 @@ const modeDescriptions = {
 
 async function initAPIs() {
   try {
-    if (!self.ai || !self.ai.languageModel) {
+    if (!self.ai?.languageModel) {
       throw new Error('AI APIs not available. Please enable AI features in Chrome.');
     }
 
     const capabilities = await self.ai.getCapabilities();
     console.log('AI Capabilities:', capabilities);
 
-    session = await self.ai.languageModel.createSession();
+    // Create session with both temperature and topK
+    session = await self.ai.languageModel.createSession({
+      temperature: 0.7,
+      topK: 20
+    });
+    
+    // Update UI to reflect initial values
+    temperatureSlider.value = "0.7";
+    temperatureValue.textContent = "0.7";
+    
     enableInterface();
   } catch (error) {
+    console.error('Initialization error:', error);
     showError(error.message);
   }
 }
@@ -135,6 +145,10 @@ async function processInput(text) {
   if (!text.trim()) return;
 
   try {
+    if (!session) {
+      await initAPIs();
+    }
+
     disableInterface();
     showTypingIndicator();
     addMessage(text, true);
@@ -147,14 +161,22 @@ async function processInput(text) {
 
     const result = await session.sendMessage(prompt, {
       temperature: parseFloat(temperatureSlider.value),
+      topK: 20,
       maxTokens: 1000
     });
 
     hideTypingIndicator();
     addMessage(result.text);
   } catch (error) {
+    console.error('Processing error:', error);
     hideTypingIndicator();
     showError(error.message);
+    
+    // If session error, try to reinitialize
+    if (error.message.includes('session')) {
+      session = null;
+      await initAPIs();
+    }
   } finally {
     enableInterface();
   }
