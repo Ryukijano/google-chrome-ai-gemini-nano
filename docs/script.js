@@ -99,25 +99,31 @@ async function initAPIs() {
       throw new Error('AI APIs not available. Please enable AI features in Chrome Canary/Dev (chrome://flags)');
     }
 
-    const capabilities = await self.ai.getCapabilities();
+    const capabilities = await self.ai.languageModel.getCapabilities();
     console.log('AI Capabilities:', capabilities);
 
     if (capabilities.available !== 'readily') {
       throw new Error('Gemini Nano is not ready. Please ensure you have sufficient storage (22GB) and GPU memory (4GB).');
     }
 
-    // Initialize the base language model session
-    session = await self.ai.languageModel.createSession({
-      temperature: 0.7,
-      topK: 20
-    });
+    // Initialize the base language model session without temperature and topK
+    session = await self.ai.languageModel.createSession();
 
     // Initialize writer and rewriter if available
-    if (self.ai.writer) {
-      writerSession = await self.ai.writer.create();
+    try {
+      if (self.ai.writer) {
+        writerSession = await self.ai.writer.createSession();
+      }
+    } catch (writerError) {
+      console.warn('Writer API not available:', writerError);
     }
-    if (self.ai.rewriter) {
-      rewriterSession = await self.ai.rewriter.create();
+
+    try {
+      if (self.ai.rewriter) {
+        rewriterSession = await self.ai.rewriter.createSession();
+      }
+    } catch (rewriterError) {
+      console.warn('Rewriter API not available:', rewriterError);
     }
 
     // Update UI to reflect initial values
@@ -170,34 +176,42 @@ async function processInput(text) {
     promptInput.value = '';
 
     let result;
+    const temperature = parseFloat(temperatureSlider.value);
     
     switch (currentMode) {
       case 'write':
         if (!writerSession) {
-          throw new Error('Writer API not available. Please enable it in chrome://flags');
+          // Fallback to regular session if writer not available
+          result = await session.sendMessage(`Write the following: ${text}`, {
+            temperature
+          });
+        } else {
+          result = await writerSession.write(text, {
+            temperature
+          });
         }
-        result = await writerSession.write(text, {
-          temperature: parseFloat(temperatureSlider.value)
-        });
         break;
         
       case 'rewrite':
         if (!rewriterSession) {
-          throw new Error('Rewriter API not available. Please enable it in chrome://flags');
+          // Fallback to regular session if rewriter not available
+          const style = selectedStyle || 'professional';
+          result = await session.sendMessage(`Rewrite the following text in a ${style} style: ${text}`, {
+            temperature
+          });
+        } else {
+          const style = selectedStyle || 'professional';
+          result = await rewriterSession.rewrite(text, {
+            style,
+            temperature
+          });
         }
-        const style = selectedStyle || 'professional';
-        result = await rewriterSession.rewrite(text, {
-          style,
-          temperature: parseFloat(temperatureSlider.value)
-        });
         break;
         
       case 'chat':
       default:
         result = await session.sendMessage(text, {
-          temperature: parseFloat(temperatureSlider.value),
-          topK: 20,
-          maxTokens: 1000
+          temperature
         });
         break;
     }
