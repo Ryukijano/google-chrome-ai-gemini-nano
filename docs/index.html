@@ -233,12 +233,15 @@
                     throw new Error('AI features not available. Please enable AI in Chrome flags.');
                 }
 
-                const capabilities = await self.ai.languageModel.getCapabilities();
-                if (capabilities.available !== 'readily') {
+                const capabilities = await self.ai.languageModel.capabilities();
+                if (!capabilities.available) {
                     throw new Error('AI model not ready. Please ensure Chrome is properly configured.');
                 }
 
-                session = await self.ai.languageModel.createSession();
+                session = await self.ai.languageModel.create({
+                    temperature: Math.min(capabilities.defaultTemperature * 1.2, 1.0),
+                    topK: capabilities.defaultTopK
+                });
                 console.log('AI initialized successfully');
             } catch (error) {
                 showError(error.message);
@@ -270,8 +273,8 @@
                 const prompt = `Write a ${elements.tone.value} ${elements.genre.value} story based on this prompt: ${elements.prompt.value}
                 Keep the story engaging and around 300 words. Focus on vivid descriptions and interesting characters.`;
 
-                const result = await session.sendMessage(prompt);
-                currentStory = result.text;
+                const response = await session.prompt(prompt);
+                currentStory = response;
                 elements.output.textContent = currentStory;
                 elements.continue.disabled = false;
             } catch (error) {
@@ -285,13 +288,10 @@
         async function continueStory() {
             try {
                 setLoading(true);
+                const prompt = `Continue the following story. Keep the same tone and style, and add about 150 more words:\n\n${currentStory}`;
                 
-                const prompt = `Continue the following ${elements.tone.value} ${elements.genre.value} story. Add about 200 more words, maintaining the same style and tone:
-
-                ${currentStory}`;
-
-                const result = await session.sendMessage(prompt);
-                currentStory += '\n\n' + result.text;
+                const response = await session.prompt(prompt);
+                currentStory += "\n\n" + response;
                 elements.output.textContent = currentStory;
             } catch (error) {
                 showError(error.message);
