@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gemini Chat</title>
+    <title>Creative AI Studio</title>
     <style>
       :root {
         --primary-color: #4a90e2;
@@ -36,6 +36,63 @@
         margin-bottom: 20px;
         padding-bottom: 20px;
         border-bottom: 1px solid #eee;
+      }
+
+      .mode-selector {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 10px;
+        background: var(--bg-color);
+        border-radius: 8px;
+      }
+
+      .mode-btn {
+        padding: 8px 15px;
+        background: transparent;
+        color: #666;
+        border: 1px solid #ddd;
+      }
+
+      .mode-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+      }
+
+      .mode-description {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border-left: 3px solid var(--primary-color);
+      }
+
+      .rewrite-options {
+        display: none;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .rewrite-options.visible {
+        display: flex;
+      }
+
+      .style-btn {
+        padding: 5px 10px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+
+      .style-btn.selected {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
       }
 
       .settings {
@@ -182,18 +239,32 @@
   <body>
     <div class="container">
       <div class="header">
-        <h1>💬 Gemini Chat</h1>
+        <h1>🎨 Creative AI Studio</h1>
         <div class="settings">
           <label>
             Temperature:
             <input type="number" id="temperature" min="0" max="1" step="0.1" value="0.7">
           </label>
-          <label>
-            Creativity:
-            <input type="number" id="topK" min="1" max="40" step="1" value="20">
-          </label>
-          <button id="reset">New Chat</button>
+          <button id="reset">New Session</button>
         </div>
+      </div>
+
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="chat">💬 Chat</button>
+        <button class="mode-btn" data-mode="write">✍️ Writer</button>
+        <button class="mode-btn" data-mode="rewrite">🔄 Rewriter</button>
+      </div>
+
+      <div class="mode-description" id="modeDesc">
+        Chat with the AI assistant about any topic.
+      </div>
+
+      <div class="rewrite-options" id="rewriteOptions">
+        <button class="style-btn" data-style="formal">Formal</button>
+        <button class="style-btn" data-style="casual">Casual</button>
+        <button class="style-btn" data-style="professional">Professional</button>
+        <button class="style-btn" data-style="creative">Creative</button>
+        <button class="style-btn" data-style="simple">Simplified</button>
       </div>
 
       <div id="error" class="error"></div>
@@ -219,6 +290,10 @@
 
     <script>
       let session;
+      let currentMode = 'chat';
+      let writer;
+      let rewriter;
+      
       const chat = document.getElementById('chat');
       const prompt = document.getElementById('prompt');
       const submit = document.getElementById('submit');
@@ -226,7 +301,69 @@
       const typing = document.getElementById('typing');
       const error = document.getElementById('error');
       const temperature = document.getElementById('temperature');
-      const topK = document.getElementById('topK');
+      const modeDesc = document.getElementById('modeDesc');
+      const rewriteOptions = document.getElementById('rewriteOptions');
+
+      const modeDescriptions = {
+        chat: "Chat with the AI assistant about any topic.",
+        write: "Get help writing content. Specify what you want to write about and get creative suggestions.",
+        rewrite: "Paste text to rewrite it in different styles. Select a style below."
+      };
+
+      async function initAPIs() {
+        try {
+          if (!self.ai) {
+            showError("Your browser doesn't support AI features. Please use Chrome and enable AI features.");
+            return;
+          }
+
+          session = await self.ai.languageModel.create({
+            temperature: Number(temperature.value),
+            systemPrompt: `You are a creative AI assistant with expertise in writing and communication.
+            You can help with writing, rewriting, and general conversation.
+            Be imaginative while maintaining clarity and relevance.`
+          });
+
+          writer = await self.ai.writer.create();
+          rewriter = await self.ai.rewriter.create();
+
+          addMessage("👋 Creative AI Studio ready! Choose a mode above and let's create something amazing!", false);
+          enableInterface();
+        } catch (error) {
+          showError("Error initializing: " + error.message);
+          console.error("Init error:", error);
+        }
+      }
+
+      async function processInput(text) {
+        if (!text.trim()) return;
+
+        try {
+          disableInterface();
+          addMessage(text, true);
+          prompt.value = '';
+
+          let response;
+          switch (currentMode) {
+            case 'write':
+              response = await writer.write(text);
+              break;
+            case 'rewrite':
+              const style = document.querySelector('.style-btn.selected')?.dataset.style || 'professional';
+              response = await rewriter.rewrite(text, { style: style });
+              break;
+            default: // chat
+              response = await session.prompt(text);
+          }
+
+          addMessage(response, false);
+        } catch (error) {
+          showError("Error: " + error.message);
+          console.error("Processing error:", error);
+        } finally {
+          enableInterface();
+        }
+      }
 
       function addMessage(text, isUser = false) {
         const div = document.createElement('div');
@@ -244,85 +381,69 @@
         }, 5000);
       }
 
-      async function initSession() {
-        try {
-          if (!self.ai?.languageModel) {
-            showError("Your browser doesn't support Gemini. Please use Chrome and enable AI features.");
-            return;
-          }
-
-          session = await self.ai.languageModel.create({
-            temperature: Number(temperature.value),
-            topK: Number(topK.value),
-            systemPrompt: `You are a helpful AI assistant powered by Google's Gemini. 
-            You provide clear, accurate, and engaging responses while being conversational and natural.
-            You can help with various tasks including writing, analysis, coding, and general questions.`
-          });
-
-          addMessage("👋 Hi! I'm your AI assistant powered by Gemini. How can I help you today?", false);
-          submit.disabled = false;
-          prompt.disabled = false;
-        } catch (error) {
-          showError("Error initializing: " + error.message);
-          console.error("Init error:", error);
-        }
+      function disableInterface() {
+        submit.disabled = true;
+        prompt.disabled = true;
+        typing.classList.add('visible');
       }
 
-      async function sendMessage() {
-        const message = prompt.value.trim();
-        if (!message) return;
-
-        try {
-          submit.disabled = true;
-          prompt.disabled = true;
-          typing.classList.add('visible');
-          
-          addMessage(message, true);
-          prompt.value = '';
-
-          if (!session) {
-            await initSession();
-          }
-
-          const response = await session.prompt(message);
-          addMessage(response, false);
-        } catch (error) {
-          showError("Error: " + error.message);
-          console.error("Send error:", error);
-        } finally {
-          submit.disabled = false;
-          prompt.disabled = false;
-          typing.classList.remove('visible');
-          prompt.focus();
-        }
+      function enableInterface() {
+        submit.disabled = false;
+        prompt.disabled = false;
+        typing.classList.remove('visible');
+        prompt.focus();
       }
 
-      async function resetChat() {
+      async function resetSession() {
         chat.innerHTML = '';
-        if (session) {
-          session.destroy();
-          session = null;
-        }
-        await initSession();
+        if (session) session.destroy();
+        if (writer) writer.destroy();
+        if (rewriter) rewriter.destroy();
+        await initAPIs();
+      }
+
+      function updateMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+        modeDesc.textContent = modeDescriptions[mode];
+        rewriteOptions.classList.toggle('visible', mode === 'rewrite');
+        
+        prompt.placeholder = mode === 'rewrite' 
+          ? "Paste text to rewrite..."
+          : mode === 'write'
+          ? "Describe what you want to write..."
+          : "Type your message here...";
       }
 
       // Event Listeners
-      submit.addEventListener('click', sendMessage);
+      submit.addEventListener('click', () => processInput(prompt.value));
 
       prompt.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
-          sendMessage();
+          processInput(prompt.value);
         }
       });
 
-      reset.addEventListener('click', resetChat);
+      reset.addEventListener('click', resetSession);
 
-      temperature.addEventListener('change', resetChat);
-      topK.addEventListener('change', resetChat);
+      temperature.addEventListener('change', resetSession);
+
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => updateMode(btn.dataset.mode));
+      });
+
+      document.querySelectorAll('.style-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
+      });
 
       // Initialize
-      initSession();
+      initAPIs();
     </script>
   </body>
 </html>

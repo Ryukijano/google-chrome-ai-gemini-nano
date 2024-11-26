@@ -1,245 +1,217 @@
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@13.0.3/lib/marked.esm.js";
 import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.es.mjs";
 
-(async () => {
-  const errorMessage = document.getElementById("error-message");
-  const costSpan = document.getElementById("cost");
-  const promptArea = document.getElementById("prompt-area");
-  const problematicArea = document.getElementById("problematic-area");
-  const promptInput = document.getElementById("prompt-input");
-  const responseArea = document.getElementById("response-area");
-  const copyLinkButton = document.getElementById("copy-link-button");
-  const resetButton = document.getElementById("reset-button");
-  const copyHelper = document.querySelector("small");
-  const rawResponse = document.querySelector("details div");
-  const form = document.querySelector("form");
-  const maxTokensInfo = document.getElementById("max-tokens");
-  const temperatureInfo = document.getElementById("temperature");
-  const tokensLeftInfo = document.getElementById("tokens-left");
-  const tokensSoFarInfo = document.getElementById("tokens-so-far");
-  const topKInfo = document.getElementById("top-k");
-  const sessionTemperature = document.getElementById("session-temperature");
-  const sessionTopK = document.getElementById("session-top-k");
+// Three.js Setup
+const canvas = document.querySelector('#bg-canvas');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 
-  promptArea.style.display = "none";
-  responseArea.style.display = "none";
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+camera.position.setZ(30);
 
-  let session = null;
+// Post-processing
+const composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(scene, camera);
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  1.5, // strength
+  0.4, // radius
+  0.85  // threshold
+);
 
-  if (!self.ai || !self.ai.languageModel) {
-    errorMessage.style.display = "block";
-    errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
-    return;
-  }
+composer.addPass(renderPass);
+composer.addPass(bloomPass);
 
-  // Check GPU availability
+// Create animated background
+const particlesGeometry = new THREE.BufferGeometry();
+const particlesCount = 2000;
+const posArray = new Float32Array(particlesCount * 3);
+
+for(let i = 0; i < particlesCount * 3; i++) {
+  posArray[i] = (Math.random() - 0.5) * 100;
+}
+
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+const particlesMaterial = new THREE.PointsMaterial({
+  size: 0.1,
+  color: '#6c5ce7',
+  transparent: true,
+  opacity: 0.8,
+  blending: THREE.AdditiveBlending
+});
+
+const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particlesMesh);
+
+// Animation
+function animate() {
+  requestAnimationFrame(animate);
+  particlesMesh.rotation.x += 0.0001;
+  particlesMesh.rotation.y += 0.0001;
+  composer.render();
+}
+
+animate();
+
+// Resize handler
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// AI Studio functionality
+let session = null;
+let currentMode = 'chat';
+let selectedStyle = '';
+
+const errorElement = document.getElementById('error');
+const messagesContainer = document.getElementById('messages');
+const promptInput = document.getElementById('prompt');
+const submitButton = document.getElementById('submit');
+const temperatureSlider = document.getElementById('temperature');
+const temperatureValue = document.getElementById('temperature-value');
+const modeButtons = document.querySelectorAll('.mode-btn');
+const modeDescription = document.querySelector('.mode-description');
+const rewriteOptions = document.querySelector('.rewrite-options');
+const styleButtons = document.querySelectorAll('.style-btn');
+const typingIndicator = document.querySelector('.typing-indicator');
+
+const modeDescriptions = {
+  chat: 'Chat with AI to brainstorm ideas and get creative feedback',
+  write: 'Generate original content with AI assistance',
+  rewrite: 'Transform your text into different styles'
+};
+
+async function initAPIs() {
   try {
+    if (!self.ai || !self.ai.languageModel) {
+      throw new Error('AI APIs not available. Please enable AI features in Chrome.');
+    }
+
     const capabilities = await self.ai.getCapabilities();
-    console.log("Initial AI Capabilities:", capabilities);
-    if (!capabilities.gpu) {
-      console.warn("GPU acceleration not available");
-      errorMessage.style.display = "block";
-      errorMessage.innerHTML += `<br>Warning: GPU acceleration is not available. Performance may be reduced.`;
-    }
+    console.log('AI Capabilities:', capabilities);
+
+    session = await self.ai.languageModel.createSession();
+    enableInterface();
   } catch (error) {
-    console.error("Error checking capabilities:", error);
+    showError(error.message);
   }
+}
 
-  // Set default values
-  sessionTemperature.value = "0.7";
-  sessionTopK.value = "20";
+function showError(message) {
+  errorElement.textContent = message;
+  errorElement.style.display = 'block';
+  setTimeout(() => {
+    errorElement.style.display = 'none';
+  }, 5000);
+}
 
-  promptArea.style.display = "block";
-  copyLinkButton.style.display = "none";
-  copyHelper.style.display = "none";
+function showTypingIndicator() {
+  typingIndicator.style.display = 'flex';
+}
 
-  const promptModel = async (highlight = false) => {
-    console.log("Starting promptModel");
-    copyLinkButton.style.display = "none";
-    copyHelper.style.display = "none";
-    problematicArea.style.display = "none";
-    const prompt = promptInput.value.trim();
-    console.log("Prompt:", prompt);
-    if (!prompt) return;
-    responseArea.style.display = "block";
-    const heading = document.createElement("h3");
-    heading.classList.add("prompt", "speech-bubble");
-    heading.textContent = prompt;
-    responseArea.append(heading);
-    const p = document.createElement("p");
-    p.classList.add("response", "speech-bubble");
-    p.textContent = "Generating response...";
-    responseArea.append(p);
-    let fullResponse = "";
+function hideTypingIndicator() {
+  typingIndicator.style.display = 'none';
+}
 
-    try {
-      console.log("Checking session");
-      if (!session) {
-        console.log("Creating new session");
-        await updateSession();
-        updateStats();
-      }
-      console.log("Getting stream");
-      const stream = await session.promptStreaming(prompt);
-      console.log("Got stream, starting loop");
+function addMessage(text, isUser = false) {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+  messageDiv.innerHTML = isUser ? text : DOMPurify.sanitize(marked.parse(text));
+  messagesContainer.appendChild(messageDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
 
-      for await (const chunk of stream) {
-        console.log("Received chunk:", chunk);
-        fullResponse = chunk.trim();
-        p.innerHTML = DOMPurify.sanitize(marked.parse(fullResponse));
-        rawResponse.innerText = fullResponse;
-      }
-    } catch (error) {
-      console.error("Error in promptModel:", error);
-      p.textContent = `Error: ${error.message}`;
-    } finally {
-      if (highlight) {
-        problematicArea.style.display = "block";
-        problematicArea.querySelector("#problem").innerText =
-          decodeURIComponent(highlight).trim();
-      }
-      copyLinkButton.style.display = "inline-block";
-      copyHelper.style.display = "inline";
-      updateStats();
+async function processInput(text) {
+  if (!text.trim()) return;
+
+  try {
+    disableInterface();
+    showTypingIndicator();
+    addMessage(text, true);
+    promptInput.value = '';
+
+    let prompt = text;
+    if (currentMode === 'rewrite' && selectedStyle) {
+      prompt = `Rewrite the following text in a ${selectedStyle} style:\n\n${text}`;
     }
-  };
 
-  const updateStats = () => {
-    if (!session) {
-      return;
-    }
-    const { maxTokens, temperature, tokensLeft, tokensSoFar, topK } = session;
-    maxTokensInfo.textContent = new Intl.NumberFormat("en-US").format(
-      maxTokens,
-    );
-    temperatureInfo.textContent = new Intl.NumberFormat("en-US", {
-      maximumSignificantDigits: 5,
-    }).format(temperature);
-    tokensLeftInfo.textContent = new Intl.NumberFormat("en-US").format(
-      tokensLeft,
-    );
-    tokensSoFarInfo.textContent = new Intl.NumberFormat("en-US").format(
-      tokensSoFar,
-    );
-    topKInfo.textContent = new Intl.NumberFormat("en-US").format(topK);
-  };
+    const result = await session.sendMessage(prompt, {
+      temperature: parseFloat(temperatureSlider.value),
+      maxTokens: 1000
+    });
 
-  const params = new URLSearchParams(location.search);
-  const urlPrompt = params.get("prompt");
-  const highlight = params.get("highlight");
-  if (urlPrompt) {
-    promptInput.value = decodeURIComponent(urlPrompt).trim();
-    await promptModel(highlight);
+    hideTypingIndicator();
+    addMessage(result.text);
+  } catch (error) {
+    hideTypingIndicator();
+    showError(error.message);
+  } finally {
+    enableInterface();
   }
+}
 
-  form.addEventListener("submit", async (e) => {
-    console.log("Form submitted");
+function updateMode(mode) {
+  currentMode = mode;
+  modeButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+  modeDescription.textContent = modeDescriptions[mode];
+  rewriteOptions.classList.toggle('visible', mode === 'rewrite');
+  
+  // Update placeholder text based on mode
+  const placeholders = {
+    chat: 'Type your message here...',
+    write: 'Describe what you want to create...',
+    rewrite: 'Paste your text here to rewrite it...'
+  };
+  promptInput.placeholder = placeholders[mode];
+}
+
+function disableInterface() {
+  promptInput.disabled = true;
+  submitButton.disabled = true;
+}
+
+function enableInterface() {
+  promptInput.disabled = false;
+  submitButton.disabled = false;
+}
+
+// Event Listeners
+submitButton.addEventListener('click', () => processInput(promptInput.value));
+
+promptInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
-    const currentPrompt = promptInput.value;
-    await promptModel();
-    promptInput.value = currentPrompt; // Restore the input value
+    processInput(promptInput.value);
+  }
+});
+
+modeButtons.forEach(btn => {
+  btn.addEventListener('click', () => updateMode(btn.dataset.mode));
+});
+
+styleButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    styleButtons.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedStyle = btn.dataset.style;
   });
+});
 
-  promptInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      form.dispatchEvent(new Event("submit"));
-    }
-  });
+temperatureSlider.addEventListener('input', () => {
+  temperatureValue.textContent = temperatureSlider.value;
+});
 
-  promptInput.addEventListener("focus", () => {
-    promptInput.select();
-  });
-
-  promptInput.addEventListener("input", async () => {
-    const value = promptInput.value.trim();
-    if (!value) {
-      return;
-    }
-    const cost = await session.countPromptTokens(value);
-    if (!cost) {
-      return;
-    }
-    costSpan.textContent = `${cost} token${cost === 1 ? '' : 's'}`;
-  });
-
-  const resetUI = () => {
-    responseArea.style.display = "none";
-    responseArea.innerHTML = "";
-    rawResponse.innerHTML = "";
-    problematicArea.style.display = "none";
-    copyLinkButton.style.display = "none";
-    copyHelper.style.display = "none";
-    maxTokensInfo.textContent = "";
-    temperatureInfo.textContent = "";
-    tokensLeftInfo.textContent = "";
-    tokensSoFarInfo.textContent = "";
-    topKInfo.textContent = "";
-    promptInput.focus();
-  };
-
-  resetButton.addEventListener("click", () => {
-    promptInput.value = "";
-    resetUI();
-    session.destroy();
-    session = null;
-    updateSession();
-  });
-
-  copyLinkButton.addEventListener("click", () => {
-    const prompt = promptInput.value.trim();
-    if (!prompt) return;
-    const url = new URL(self.location.href);
-    url.searchParams.set("prompt", encodeURIComponent(prompt));
-    const selection = getSelection().toString() || "";
-    if (selection) {
-      url.searchParams.set("highlight", encodeURIComponent(selection));
-    } else {
-      url.searchParams.delete("highlight");
-    }
-    navigator.clipboard.writeText(url.toString()).catch((err) => {
-      alert("Failed to copy link: ", err);
-    });
-    const text = copyLinkButton.textContent;
-    copyLinkButton.textContent = "Copied";
-    setTimeout(() => {
-      copyLinkButton.textContent = text;
-    }, 3000);
-  });
-
-  const updateSession = async () => {
-    console.log("Creating new session with:", {
-      temperature: sessionTemperature.value,
-      topK: sessionTopK.value
-    });
-    try {
-      // Check if GPU is available
-      const capabilities = await self.ai.getCapabilities();
-      console.log("AI Capabilities:", capabilities);
-      
-      // Create session with GPU acceleration
-      session = await self.ai.languageModel.create({
-        temperature: Number(sessionTemperature.value),
-        topK: Number(sessionTopK.value),
-        useGpu: true, // Explicitly request GPU
-      });
-      console.log("Session created successfully");
-    } catch (error) {
-      console.error("Error creating session:", error);
-      throw error;
-    }
-    resetUI();
-    updateStats();
-  };
-
-  sessionTemperature.addEventListener("input", async () => {
-    await updateSession();
-  });
-
-  sessionTopK.addEventListener("input", async () => {
-    await updateSession();
-  });
-
-  // Initialize the session stats
-  updateStats();
-})();
+// Initialize
+initAPIs();
