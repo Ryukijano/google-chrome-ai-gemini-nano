@@ -1,0 +1,27 @@
+{
+  "name": "chrome-ai-playground",
+  "version": "1.0.0",
+  "description": "A web application demonstrating Chrome's built-in AI capabilities using Gemini Nano",
+  "type": "module",
+  "scripts": {
+    "start": "http-server -c-1 --cors -o",
+    "dev": "http-server -c-1 --cors",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "chrome",
+    "ai",
+    "gemini",
+    "nano",
+    "prompt-api"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "http-server": "^14.1.1",
+    "prettier": "^3.2.4"
+  }
+}

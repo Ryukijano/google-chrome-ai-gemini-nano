@@ -1,49 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Google Chrome AI Gemini Nano App</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" type="module" defer></script>
-</head>
-<body>
-  <h1>✨ Google Chrome AI Gemini Nano App</h1>
-  
-  <div id="error-message" class="hidden"></div>
-  
-  <div id="prompt-area">
-    <form id="prompt-form">
-      <label for="prompt-input">Prompt:</label>
-      <textarea id="prompt-input" placeholder="Enter your prompt here"></textarea>
-      <div class="buttons">
-        <button type="submit" id="submit-button">Submit Prompt</button>
-        <button type="button" id="reset-button">Reset Session</button>
-      </div>
-    </form>
-  </div>
-  
-  <div id="response-area" class="hidden">
-    <!-- AI response will be displayed here -->
-  </div>
-  
-  <div id="stats" class="hidden">
-    <p>Cost: <span id="cost">0</span> tokens</p>
-    <p>Temperature: <span id="temperature">0.7</span></p>
-    <p>Tokens Left: <span id="tokens-left">1000</span></p>
-    <p>Tokens So Far: <span id="tokens-so-far">0</span></p>
-  </div>
-  
-  <div id="problematic-area" class="hidden">
-    <h3>Problem:</h3>
-    <p id="problem"></p>
-  </div>
-  
-  <button id="copy-link-button" class="hidden">Copy Link</button>
-  <small class="hidden">Link Copied!</small>
-  
-  <details>
-    <summary>Raw Response</summary>
-    <div id="raw-response"></div>
-  </details>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gemini Nano Demo</title>
+    <style>
+      body {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: system-ui;
+      }
+      #prompt {
+        width: 100%;
+        height: 100px;
+        margin: 10px 0;
+      }
+      #response {
+        white-space: pre-wrap;
+        background: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Gemini Nano Demo</h1>
+    <textarea id="prompt" placeholder="Enter your prompt here..."></textarea>
+    <button id="submit">Send</button>
+    <div id="response"></div>
+
+    <script>
+      let session;
+
+      async function initSession() {
+        try {
+          session = await self.ai.languageModel.create({
+            systemPrompt: "Pretend to be an eloquent hamster."
+          });
+          console.log("Session created successfully!");
+        } catch (error) {
+          console.error("Error creating session:", error);
+          document.getElementById("response").textContent = "Error: " + error.message;
+        }
+      }
+
+      async function sendPrompt() {
+        const promptText = document.getElementById("prompt").value;
+        const responseDiv = document.getElementById("response");
+        
+        try {
+          if (!session) {
+            await initSession();
+          }
+          
+          responseDiv.textContent = "Thinking...";
+          const response = await session.prompt(promptText);
+          responseDiv.textContent = response;
+        } catch (error) {
+          console.error("Error:", error);
+          responseDiv.textContent = "Error: " + error.message;
+        }
+      }
+
+      // Initialize session when page loads
+      initSession();
+
+      // Add click handler
+      document.getElementById("submit").addEventListener("click", sendPrompt);
+
+      // Add enter key handler
+      document.getElementById("prompt").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendPrompt();
+        }
+      });
+    </script>
+  </body>
 </html>
