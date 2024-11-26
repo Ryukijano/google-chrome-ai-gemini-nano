@@ -1,54 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creative AI Studio</title>
     <style>
       :root {
-        --primary-color: #4a90e2;
-        --bg-color: #f5f5f5;
-        --chat-bg: #ffffff;
-        --user-msg-bg: #e3f2fd;
-        --ai-msg-bg: #f5f5f5;
+        --primary-color: #6366f1;
+        --bg-color: #1a1a1a;
+        --text-color: #ffffff;
+        --card-bg: rgba(255, 255, 255, 0.1);
+        --border-color: rgba(255, 255, 255, 0.1);
       }
 
       body {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: system-ui;
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
         background: var(--bg-color);
-        color: #333;
+        color: var(--text-color);
+        line-height: 1.5;
+        overflow: hidden;
+      }
+
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
       }
 
       .container {
-        background: var(--chat-bg);
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        padding: 20px;
-      }
-
-      .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid #eee;
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        position: relative;
+        z-index: 1;
       }
 
       .mode-selector {
         display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        padding: 10px;
-        background: var(--bg-color);
-        border-radius: 8px;
+        gap: 1rem;
+        margin-bottom: 1rem;
       }
 
       .mode-btn {
-        padding: 8px 15px;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
         background: transparent;
         color: #666;
         border: 1px solid #ddd;
@@ -61,389 +58,423 @@
       }
 
       .mode-description {
-        font-size: 0.9rem;
-        color: #666;
-        margin-bottom: 15px;
-        padding: 10px;
-        background: #f8f9fa;
-        border-radius: 6px;
-        border-left: 3px solid var(--primary-color);
+        margin-bottom: 1rem;
+        color: #888;
+      }
+
+      .messages {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .message {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+      }
+
+      .message.user {
+        background: rgba(99, 102, 241, 0.1);
+        margin-left: 2rem;
+      }
+
+      .message.ai {
+        background: rgba(255, 255, 255, 0.05);
+        margin-right: 2rem;
+      }
+
+      .input-area {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      textarea {
+        flex: 1;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        resize: vertical;
+        min-height: 60px;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .settings {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .slider-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
 
       .rewrite-options {
         display: none;
-        gap: 10px;
-        margin-bottom: 15px;
+        margin-top: 1rem;
       }
 
       .rewrite-options.visible {
-        display: flex;
-      }
-
-      .style-btn {
-        padding: 5px 10px;
-        background: #f0f0f0;
-        border: 1px solid #ddd;
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 0.9rem;
-      }
-
-      .style-btn.selected {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-      }
-
-      .settings {
-        display: flex;
-        gap: 15px;
-      }
-
-      .settings label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-
-      .settings input {
-        width: 60px;
-        padding: 5px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-      }
-
-      .chat-container {
-        height: 500px;
-        overflow-y: auto;
-        margin-bottom: 20px;
-        padding: 10px;
-        border-radius: 8px;
-      }
-
-      .message {
-        margin: 10px 0;
-        padding: 10px 15px;
-        border-radius: 10px;
-        max-width: 80%;
-        word-wrap: break-word;
-      }
-
-      .user-message {
-        background: var(--user-msg-bg);
-        margin-left: auto;
-        border-bottom-right-radius: 2px;
-      }
-
-      .ai-message {
-        background: var(--ai-msg-bg);
-        margin-right: auto;
-        border-bottom-left-radius: 2px;
-      }
-
-      .input-container {
-        display: flex;
-        gap: 10px;
-      }
-
-      #prompt {
-        flex-grow: 1;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        resize: none;
-        font-family: inherit;
-        font-size: 1rem;
-        line-height: 1.5;
-      }
-
-      button {
-        padding: 10px 20px;
-        background: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background 0.2s;
-      }
-
-      button:hover {
-        background: #357abd;
-      }
-
-      button:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-      }
-
-      .system-message {
-        color: #666;
-        font-style: italic;
-        text-align: center;
-        margin: 10px 0;
-      }
-
-      .typing-indicator {
-        display: none;
-        padding: 10px;
-        background: var(--ai-msg-bg);
-        border-radius: 10px;
-        margin: 10px 0;
-        width: fit-content;
-      }
-
-      .typing-indicator.visible {
         display: block;
       }
 
-      .dots {
-        display: flex;
-        gap: 4px;
-      }
-
-      .dot {
-        width: 8px;
-        height: 8px;
-        background: #999;
-        border-radius: 50%;
-        animation: bounce 1.4s infinite;
-      }
-
-      .dot:nth-child(2) { animation-delay: 0.2s; }
-      .dot:nth-child(3) { animation-delay: 0.4s; }
-
-      @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
+      .style-btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
       }
 
       .error {
-        color: #d32f2f;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 4px;
+        color: #ef4444;
+        margin: 1rem 0;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background: rgba(239, 68, 68, 0.1);
         display: none;
       }
 
-      @media (max-width: 600px) {
-        body {
-          padding: 10px;
-        }
-        .message {
-          max-width: 90%;
-        }
+      .typing {
+        display: none;
+        color: #888;
+        margin: 0.5rem 0;
       }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+    <canvas id="bg"></canvas>
     <div class="container">
-      <div class="header">
-        <h1>🎨 Creative AI Studio</h1>
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="chat">Chat</button>
+            <button class="mode-btn" data-mode="write">Write</button>
+            <button class="mode-btn" data-mode="rewrite">Rewrite</button>
+        </div>
+        <div class="mode-description">Chat with AI in a natural conversation.</div>
+        
         <div class="settings">
-          <label>
-            Temperature:
-            <input type="number" id="temperature" min="0" max="1" step="0.1" value="0.7">
-          </label>
-          <button id="reset">New Session</button>
+            <div class="slider-container">
+                <label for="temperature">Temperature:</label>
+                <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+                <span id="temperature-value">0.7</span>
+            </div>
         </div>
-      </div>
 
-      <div class="mode-selector">
-        <button class="mode-btn active" data-mode="chat">💬 Chat</button>
-        <button class="mode-btn" data-mode="write">✍️ Writer</button>
-        <button class="mode-btn" data-mode="rewrite">🔄 Rewriter</button>
-      </div>
-
-      <div class="mode-description" id="modeDesc">
-        Chat with the AI assistant about any topic.
-      </div>
-
-      <div class="rewrite-options" id="rewriteOptions">
-        <button class="style-btn" data-style="formal">Formal</button>
-        <button class="style-btn" data-style="casual">Casual</button>
-        <button class="style-btn" data-style="professional">Professional</button>
-        <button class="style-btn" data-style="creative">Creative</button>
-        <button class="style-btn" data-style="simple">Simplified</button>
-      </div>
-
-      <div id="error" class="error"></div>
-      <div id="chat" class="chat-container"></div>
-      
-      <div class="typing-indicator" id="typing">
-        <div class="dots">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
+        <div class="rewrite-options">
+            <button class="style-btn" data-style="formal">Formal</button>
+            <button class="style-btn" data-style="casual">Casual</button>
+            <button class="style-btn" data-style="professional">Professional</button>
+            <button class="style-btn" data-style="creative">Creative</button>
         </div>
-      </div>
 
-      <div class="input-container">
-        <textarea 
-          id="prompt" 
-          placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)"
-          rows="2"
-        ></textarea>
-        <button id="submit">Send</button>
-      </div>
+        <div class="error" id="error"></div>
+        <div class="messages" id="messages"></div>
+        <div class="typing" id="typing">AI is typing...</div>
+        
+        <div class="input-area">
+            <textarea id="prompt" placeholder="Type your message here..."></textarea>
+            <button id="submit">Send</button>
+        </div>
     </div>
 
-    <script>
-      let session;
-      let currentMode = 'chat';
-      let writer;
-      let rewriter;
-      
-      const chat = document.getElementById('chat');
-      const prompt = document.getElementById('prompt');
-      const submit = document.getElementById('submit');
-      const reset = document.getElementById('reset');
-      const typing = document.getElementById('typing');
-      const error = document.getElementById('error');
-      const temperature = document.getElementById('temperature');
-      const modeDesc = document.getElementById('modeDesc');
-      const rewriteOptions = document.getElementById('rewriteOptions');
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.157.0/build/three.module.js';
 
-      const modeDescriptions = {
-        chat: "Chat with the AI assistant about any topic.",
-        write: "Get help writing content. Specify what you want to write about and get creative suggestions.",
-        rewrite: "Paste text to rewrite it in different styles. Select a style below."
-      };
-
-      async function initAPIs() {
-        try {
-          if (!self.ai) {
-            showError("Your browser doesn't support AI features. Please use Chrome and enable AI features.");
-            return;
-          }
-
-          session = await self.ai.languageModel.create({
-            temperature: Number(temperature.value),
-            systemPrompt: `You are a creative AI assistant with expertise in writing and communication.
-            You can help with writing, rewriting, and general conversation.
-            Be imaginative while maintaining clarity and relevance.`
-          });
-
-          writer = await self.ai.writer.create();
-          rewriter = await self.ai.rewriter.create();
-
-          addMessage("👋 Creative AI Studio ready! Choose a mode above and let's create something amazing!", false);
-          enableInterface();
-        } catch (error) {
-          showError("Error initializing: " + error.message);
-          console.error("Init error:", error);
-        }
-      }
-
-      async function processInput(text) {
-        if (!text.trim()) return;
-
-        try {
-          disableInterface();
-          addMessage(text, true);
-          prompt.value = '';
-
-          let response;
-          switch (currentMode) {
-            case 'write':
-              response = await writer.write(text);
-              break;
-            case 'rewrite':
-              const style = document.querySelector('.style-btn.selected')?.dataset.style || 'professional';
-              response = await rewriter.rewrite(text, { style: style });
-              break;
-            default: // chat
-              response = await session.prompt(text);
-          }
-
-          addMessage(response, false);
-        } catch (error) {
-          showError("Error: " + error.message);
-          console.error("Processing error:", error);
-        } finally {
-          enableInterface();
-        }
-      }
-
-      function addMessage(text, isUser = false) {
-        const div = document.createElement('div');
-        div.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-        div.textContent = text;
-        chat.appendChild(div);
-        chat.scrollTop = chat.scrollHeight;
-      }
-
-      function showError(message) {
-        error.textContent = message;
-        error.style.display = 'block';
-        setTimeout(() => {
-          error.style.display = 'none';
-        }, 5000);
-      }
-
-      function disableInterface() {
-        submit.disabled = true;
-        prompt.disabled = true;
-        typing.classList.add('visible');
-      }
-
-      function enableInterface() {
-        submit.disabled = false;
-        prompt.disabled = false;
-        typing.classList.remove('visible');
-        prompt.focus();
-      }
-
-      async function resetSession() {
-        chat.innerHTML = '';
-        if (session) session.destroy();
-        if (writer) writer.destroy();
-        if (rewriter) rewriter.destroy();
-        await initAPIs();
-      }
-
-      function updateMode(mode) {
-        currentMode = mode;
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.mode === mode);
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#bg'),
+            antialias: true
         });
-        modeDesc.textContent = modeDescriptions[mode];
-        rewriteOptions.classList.toggle('visible', mode === 'rewrite');
-        
-        prompt.placeholder = mode === 'rewrite' 
-          ? "Paste text to rewrite..."
-          : mode === 'write'
-          ? "Describe what you want to write..."
-          : "Type your message here...";
-      }
 
-      // Event Listeners
-      submit.addEventListener('click', () => processInput(prompt.value));
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.setZ(30);
 
-      prompt.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          processInput(prompt.value);
+        // Particle system
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 5000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 100;
         }
-      });
 
-      reset.addEventListener('click', resetSession);
-
-      temperature.addEventListener('change', resetSession);
-
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => updateMode(btn.dataset.mode));
-      });
-
-      document.querySelectorAll('.style-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.005,
+            color: '#6366f1'
         });
-      });
 
-      // Initialize
-      initAPIs();
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Animation
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.x += 0.0001;
+            particlesMesh.rotation.y += 0.0001;
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // AI Studio functionality
+        let session = null;
+        let writerSession = null;
+        let rewriterSession = null;
+        let currentMode = 'chat';
+        let selectedStyle = '';
+
+        const errorElement = document.getElementById('error');
+        const messagesContainer = document.getElementById('messages');
+        const typingIndicator = document.getElementById('typing');
+        const promptInput = document.getElementById('prompt');
+        const submitButton = document.getElementById('submit');
+        const temperatureSlider = document.getElementById('temperature');
+        const temperatureValue = document.getElementById('temperature-value');
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        const modeDescription = document.querySelector('.mode-description');
+        const rewriteOptions = document.querySelector('.rewrite-options');
+        const styleButtons = document.querySelectorAll('.style-btn');
+
+        const modeDescriptions = {
+            chat: 'Chat with AI in a natural conversation.',
+            write: 'Let AI help you write content from scratch.',
+            rewrite: 'Transform existing text into different styles.'
+        };
+
+        async function initAPIs() {
+            try {
+                if (!self.ai?.languageModel) {
+                    throw new Error('AI APIs not available. Please enable AI features in Chrome Canary/Dev (chrome://flags)');
+                }
+
+                const capabilities = await self.ai.languageModel.getCapabilities();
+                console.log('AI Capabilities:', capabilities);
+
+                if (capabilities.available !== 'readily') {
+                    throw new Error('Gemini Nano is not ready. Please ensure you have sufficient storage (22GB) and GPU memory (4GB).');
+                }
+
+                // Initialize the base language model session without temperature and topK
+                session = await self.ai.languageModel.createSession();
+
+                // Initialize writer and rewriter if available
+                try {
+                    if (self.ai.writer) {
+                        writerSession = await self.ai.writer.createSession();
+                    }
+                } catch (writerError) {
+                    console.warn('Writer API not available:', writerError);
+                }
+
+                try {
+                    if (self.ai.rewriter) {
+                        rewriterSession = await self.ai.rewriter.createSession();
+                    }
+                } catch (rewriterError) {
+                    console.warn('Rewriter API not available:', rewriterError);
+                }
+
+                // Update UI to reflect initial values
+                temperatureSlider.value = "0.7";
+                temperatureValue.textContent = "0.7";
+                
+                enableInterface();
+                console.log('AI APIs initialized successfully');
+            } catch (error) {
+                console.error('Init error:', error);
+                showError(error.message);
+            }
+        }
+
+        function showError(message) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'block';
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(isUser ? 'user' : 'ai');
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function processInput(text) {
+            if (!text.trim()) return;
+
+            try {
+                if (!session) {
+                    await initAPIs();
+                }
+
+                disableInterface();
+                showTypingIndicator();
+                addMessage(text, true);
+                promptInput.value = '';
+
+                let result;
+                const temperature = parseFloat(temperatureSlider.value);
+                
+                switch (currentMode) {
+                    case 'write':
+                        if (!writerSession) {
+                            // Fallback to regular session if writer not available
+                            result = await session.sendMessage(`Write the following: ${text}`, {
+                                temperature
+                            });
+                        } else {
+                            result = await writerSession.write(text, {
+                                temperature
+                            });
+                        }
+                        break;
+                        
+                    case 'rewrite':
+                        if (!rewriterSession) {
+                            // Fallback to regular session if rewriter not available
+                            const style = selectedStyle || 'professional';
+                            result = await session.sendMessage(`Rewrite the following text in a ${style} style: ${text}`, {
+                                temperature
+                            });
+                        } else {
+                            const style = selectedStyle || 'professional';
+                            result = await rewriterSession.rewrite(text, {
+                                style,
+                                temperature
+                            });
+                        }
+                        break;
+                        
+                    case 'chat':
+                    default:
+                        result = await session.sendMessage(text, {
+                            temperature
+                        });
+                        break;
+                }
+
+                hideTypingIndicator();
+                addMessage(result.text || result);
+            } catch (error) {
+                console.error('Processing error:', error);
+                hideTypingIndicator();
+                showError(error.message);
+                
+                // If session error, try to reinitialize
+                if (error.message.includes('session')) {
+                    session = null;
+                    writerSession = null;
+                    rewriterSession = null;
+                    await initAPIs();
+                }
+            } finally {
+                enableInterface();
+            }
+        }
+
+        function disableInterface() {
+            promptInput.disabled = true;
+            submitButton.disabled = true;
+        }
+
+        function enableInterface() {
+            promptInput.disabled = false;
+            submitButton.disabled = false;
+        }
+
+        function updateMode(mode) {
+            currentMode = mode;
+            modeButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            modeDescription.textContent = modeDescriptions[mode];
+            rewriteOptions.classList.toggle('visible', mode === 'rewrite');
+            
+            // Update placeholder text based on mode
+            const placeholders = {
+                chat: 'Type your message here...',
+                write: 'Describe what you want to create...',
+                rewrite: 'Paste your text here to rewrite it...'
+            };
+            promptInput.placeholder = placeholders[mode];
+        }
+
+        // Event Listeners
+        promptInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                processInput(promptInput.value);
+            }
+        });
+
+        submitButton.addEventListener('click', () => {
+            processInput(promptInput.value);
+        });
+
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                updateMode(btn.dataset.mode);
+            });
+        });
+
+        styleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                styleButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedStyle = btn.dataset.style;
+            });
+        });
+
+        temperatureSlider.addEventListener('input', () => {
+            temperatureValue.textContent = temperatureSlider.value;
+        });
+
+        // Initialize
+        initAPIs();
     </script>
-  </body>
+</body>
 </html>
