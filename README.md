@@ -1,45 +1,110 @@
-# Chrome AI Assistant
+# 🌟 AI Story Crafter
 
-A modern web application that demonstrates the power of Chrome's built-in AI capabilities using Gemini Nano. This project is built for the Google Chrome Built-in AI Challenge.
+An innovative web application that combines AI-powered story generation with interactive editing capabilities, powered by Chrome's built-in Gemini Nano AI.
 
-## Features
+## ✨ Features
 
-- **Prompt API Integration**: Interact with Chrome's built-in AI model directly in your browser
-- **Multiple AI Capabilities**: Access various AI features including:
-  - Text Generation
-  - Summarization
-  - Writing Assistance
-  - Text Rewriting
-- **Modern UI/UX**: Clean, responsive interface with both light and dark theme support
-- **Real-time Streaming**: See AI responses as they are generated
-- **Customizable Parameters**: Adjust temperature and top-k settings for AI responses
+### 🎨 Story Generation
+- Multiple genre options (Fantasy, Science Fiction, Mystery, Romance, Horror, Historical, Adventure)
+- Various tone settings (Dramatic, Humorous, Dark, Whimsical, Inspirational, Mysterious, Philosophical)
+- Customizable story length (Short ~300 words, Medium ~600 words, Long ~1000 words)
+- Story continuation capabilities
+- Smart context maintenance
 
-## Getting Started
+### ✍️ Interactive Editing
+- Full text editing capabilities
+- Real-time word and character count
+- Paragraph formatting tools
+- Undo/redo functionality
+- Auto-save and manual save options
+
+### 🤖 AI-Powered Selection Tools
+- Select and rewrite specific sections
+- AI-assisted text expansion
+- Writing quality improvements
+- Context-aware modifications
+- Real-time AI suggestions
+
+### 📝 Document Management
+- Export stories to text files
+- Format text structure
+- Clean paragraph organization
+- Story statistics tracking
+
+## 🚀 Getting Started
 
 ### Prerequisites
+- Chrome Canary/Dev Channel
+- AI Early Preview features enabled
+- Sufficient storage space for AI model (~22GB)
 
-1. Chrome browser with Built-in AI support enabled
-2. Join the [Early Preview Program](https://developer.chrome.com/docs/ai/built-in#get_an_early_preview) to access Chrome's AI features
+### Setup
+1. Enable Chrome flags:
+   - Navigate to `chrome://flags`
+   - Enable "Experimental AI features"
+   - Enable "Built-in Language Model"
+   - Restart Chrome
 
-### Running the Application
+2. Open the application in Chrome
+3. Wait for AI initialization
+4. Start crafting your story!
 
-1. Clone this repository
-2. Open `index.html` in Chrome
-3. Start interacting with the AI assistant!
+## 💡 How to Use
 
-## Technical Details
+### Story Generation
+1. Select your desired genre and tone
+2. Choose story length
+3. Enter your story prompt
+4. Click "Generate Story"
 
-- Built using vanilla JavaScript with modern ES6+ features
-- Uses the Chrome Built-in AI API for all AI operations
-- Markdown parsing with [marked](https://marked.js.org/)
-- HTML sanitization with [DOMPurify](https://github.com/cure53/DOMPurify)
-- Responsive design with CSS variables for theming
+### Editing Features
+1. Click "Toggle Editing" to enable edit mode
+2. Edit text directly in the editor
+3. Use formatting tools as needed
+4. Save changes manually or let auto-save handle it
 
-## License
+### Selection Tools
+1. Enable edit mode
+2. Select any text portion
+3. Use the floating toolbar to:
+   - Rewrite selection
+   - Expand content
+   - Improve writing quality
 
-This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
+### Story Management
+- Continue story with AI assistance
+- Rewrite specific sections
+- Export to text file
+- Track word count and statistics
 
-## Acknowledgments
+## ⚡ Technical Features
+- Chrome's Built-in Gemini Nano Language Model
+- Real-time AI text processing
+- Responsive design
+- Modern UI with glassmorphic elements
+- Error handling and recovery
+- Performance optimizations
 
-- Built for the Google Chrome Built-in AI Challenge
-- Powered by Chrome's Gemini Nano model
+## 🔒 Privacy & Security
+- No data storage or transmission
+- All processing done locally
+- Uses Chrome's built-in AI capabilities
+- No external API dependencies
+
+## 🛠️ Technical Requirements
+- Chrome Canary/Dev Channel
+- AI Early Preview enabled
+- 22GB+ free storage space
+- Secure context (HTTPS)
+
+## 📝 Notes
+- Story generation quality depends on prompt clarity
+- AI processing may take a few moments
+- Text selections are processed in real-time
+- Regular Chrome updates recommended
+
+## 🤝 Contributing
+Feel free to submit issues and enhancement requests!
+
+## 📜 License
+This project is licensed under the MIT License - see the LICENSE file for details.
