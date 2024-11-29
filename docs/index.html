@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Story Crafter</title>
+    <title>✨ AI Story Crafter</title>
     <style>
         :root {
             --primary: #7c3aed;
@@ -155,6 +155,43 @@
             font-style: italic;
         }
 
+        .status-indicator {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+
+        .story-metadata {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .story-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .story-format {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .story-stats {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
         @media (max-width: 768px) {
             .story-container {
                 grid-template-columns: 1fr;
@@ -164,67 +201,90 @@
 </head>
 <body>
     <div class="container">
+        <div id="status" class="status-indicator" style="display: none;"></div>
         <header class="header">
             <h1>✨ AI Story Crafter</h1>
             <p>Transform your ideas into captivating stories with AI assistance</p>
         </header>
-
-        <div class="story-container">
+        
+        <main class="content">
             <section class="input-section">
-                <h2 class="section-title">Story Parameters</h2>
-                
-                <div class="prompt-container">
-                    <label class="prompt-label" for="genre">Genre</label>
-                    <select id="genre">
+                <div class="controls">
+                    <select id="genre" class="select">
                         <option value="fantasy">Fantasy</option>
-                        <option value="scifi">Science Fiction</option>
+                        <option value="science-fiction">Science Fiction</option>
                         <option value="mystery">Mystery</option>
                         <option value="romance">Romance</option>
                         <option value="horror">Horror</option>
+                        <option value="historical">Historical</option>
+                        <option value="adventure">Adventure</option>
                     </select>
 
-                    <label class="prompt-label" for="tone">Tone</label>
-                    <select id="tone">
+                    <select id="tone" class="select">
                         <option value="dramatic">Dramatic</option>
                         <option value="humorous">Humorous</option>
                         <option value="dark">Dark</option>
                         <option value="whimsical">Whimsical</option>
                         <option value="inspirational">Inspirational</option>
+                        <option value="mysterious">Mysterious</option>
+                        <option value="philosophical">Philosophical</option>
                     </select>
-
-                    <label class="prompt-label" for="prompt">Story Prompt</label>
-                    <textarea id="prompt" placeholder="Describe your story idea or provide a starting point..."></textarea>
                 </div>
 
-                <div class="controls">
-                    <button id="generate">Generate Story</button>
-                    <button id="continue" disabled>Continue Story</button>
+                <textarea id="prompt" placeholder="Enter your story prompt here..." class="textarea"></textarea>
+                
+                <div class="story-format">
+                    <label>Story Length:</label>
+                    <select id="length" class="select">
+                        <option value="short">Short (~300 words)</option>
+                        <option value="medium">Medium (~600 words)</option>
+                        <option value="long">Long (~1000 words)</option>
+                    </select>
                 </div>
 
-                <div class="error" id="error"></div>
-                <div class="loading" id="loading">Crafting your story...</div>
+                <button id="generate" class="button">Generate Story</button>
             </section>
 
             <section class="output-section">
-                <h2 class="section-title">Generated Story</h2>
-                <div class="story-output" id="output"></div>
+                <div id="error" class="error" style="display: none;"></div>
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Crafting your story...</p>
+                </div>
+                
+                <div class="story-container">
+                    <div id="output" class="output"></div>
+                    <div id="story-stats" class="story-stats"></div>
+                    <div class="story-controls">
+                        <button id="continue" class="button" disabled>Continue Story</button>
+                        <button id="rewrite" class="button" disabled>Rewrite Last Part</button>
+                        <button id="export" class="button" disabled>Export Story</button>
+                    </div>
+                </div>
             </section>
-        </div>
+        </main>
     </div>
 
     <script>
         let session = null;
         let currentStory = '';
+        let isGenerating = false;
+        let sharedContext = null;
 
         const elements = {
             genre: document.getElementById('genre'),
             tone: document.getElementById('tone'),
+            length: document.getElementById('length'),
             prompt: document.getElementById('prompt'),
             generate: document.getElementById('generate'),
             continue: document.getElementById('continue'),
+            rewrite: document.getElementById('rewrite'),
+            export: document.getElementById('export'),
             output: document.getElementById('output'),
             error: document.getElementById('error'),
-            loading: document.getElementById('loading')
+            loading: document.getElementById('loading'),
+            status: document.getElementById('status'),
+            storyStats: document.getElementById('story-stats')
         };
 
         async function initAI() {
@@ -238,15 +298,29 @@
                     throw new Error('AI model not ready. Please ensure Chrome is properly configured.');
                 }
 
+                // Initialize shared context for the writer API
+                if (self.ai.writer) {
+                    sharedContext = new SharedArrayBuffer(1024);
+                    await self.ai.writer.setSharedContext(sharedContext);
+                }
+
                 session = await self.ai.languageModel.create({
-                    temperature: Math.min(capabilities.defaultTemperature * 1.2, 1.0),
+                    temperature: 0.8,
                     topK: capabilities.defaultTopK
                 });
-                console.log('AI initialized successfully');
+
+                showStatus('AI initialized successfully', 'success');
             } catch (error) {
                 showError(error.message);
                 console.error('Initialization error:', error);
             }
+        }
+
+        function showStatus(message, type = 'info') {
+            elements.status.textContent = message;
+            elements.status.style.display = 'block';
+            elements.status.style.backgroundColor = type === 'success' ? 'rgba(0, 128, 0, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+            setTimeout(() => elements.status.style.display = 'none', 3000);
         }
 
         function showError(message) {
@@ -256,12 +330,22 @@
         }
 
         function setLoading(isLoading) {
+            isGenerating = isLoading;
             elements.loading.style.display = isLoading ? 'block' : 'none';
             elements.generate.disabled = isLoading;
             elements.continue.disabled = isLoading || !currentStory;
+            elements.rewrite.disabled = isLoading || !currentStory;
+            elements.export.disabled = isLoading || !currentStory;
+        }
+
+        function updateStoryStats() {
+            const words = currentStory.trim().split(/\s+/).length;
+            const characters = currentStory.length;
+            elements.storyStats.textContent = `Words: ${words} | Characters: ${characters}`;
         }
 
         async function generateStory() {
+            if (isGenerating) return;
             if (!elements.prompt.value.trim()) {
                 showError('Please provide a story prompt');
                 return;
@@ -270,13 +354,21 @@
             try {
                 setLoading(true);
                 
+                const lengthWord = elements.length.value === 'short' ? '300' : 
+                                 elements.length.value === 'medium' ? '600' : '1000';
+                
                 const prompt = `Write a ${elements.tone.value} ${elements.genre.value} story based on this prompt: ${elements.prompt.value}
-                Keep the story engaging and around 300 words. Focus on vivid descriptions and interesting characters.`;
+                Keep the story engaging and approximately ${lengthWord} words. Focus on vivid descriptions and interesting characters.
+                Structure the story with clear paragraphs and natural flow.`;
 
                 const response = await session.prompt(prompt);
                 currentStory = response;
                 elements.output.textContent = currentStory;
+                updateStoryStats();
+                
                 elements.continue.disabled = false;
+                elements.rewrite.disabled = false;
+                elements.export.disabled = false;
             } catch (error) {
                 showError(error.message);
                 console.error('Generation error:', error);
@@ -286,13 +378,17 @@
         }
 
         async function continueStory() {
+            if (isGenerating) return;
+            
             try {
                 setLoading(true);
-                const prompt = `Continue the following story. Keep the same tone and style, and add about 150 more words:\n\n${currentStory}`;
+                const prompt = `Continue the following story. Keep the same tone and style, and add about 300 more words. 
+                Ensure the continuation flows naturally from the existing narrative:\n\n${currentStory}`;
                 
                 const response = await session.prompt(prompt);
                 currentStory += "\n\n" + response;
                 elements.output.textContent = currentStory;
+                updateStoryStats();
             } catch (error) {
                 showError(error.message);
                 console.error('Continuation error:', error);
@@ -301,16 +397,52 @@
             }
         }
 
+        async function rewriteLastPart() {
+            if (isGenerating) return;
+            
+            try {
+                setLoading(true);
+                const paragraphs = currentStory.split('\n\n');
+                const allButLast = paragraphs.slice(0, -1).join('\n\n');
+                
+                const prompt = `Rewrite the ending of this story with a different approach while maintaining the same tone and style:\n\n${allButLast}`;
+                
+                const response = await session.prompt(prompt);
+                currentStory = allButLast + '\n\n' + response;
+                elements.output.textContent = currentStory;
+                updateStoryStats();
+            } catch (error) {
+                showError(error.message);
+                console.error('Rewrite error:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function exportStory() {
+            const blob = new Blob([currentStory], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `story_${elements.genre.value}_${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
         // Event Listeners
         elements.generate.addEventListener('click', generateStory);
         elements.continue.addEventListener('click', continueStory);
+        elements.rewrite.addEventListener('click', rewriteLastPart);
+        elements.export.addEventListener('click', exportStory);
         elements.prompt.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) {
                 generateStory();
             }
         });
 
-        // Initialize
+        // Initialize AI on page load
         initAI();
     </script>
 </body>
