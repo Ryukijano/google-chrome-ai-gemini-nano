@@ -298,10 +298,20 @@
                     throw new Error('AI model not ready. Please ensure Chrome is properly configured.');
                 }
 
-                // Initialize shared context for the writer API
-                if (self.ai.writer) {
-                    sharedContext = new SharedArrayBuffer(1024);
-                    await self.ai.writer.setSharedContext(sharedContext);
+                // Try to initialize writer API if available, but don't fail if it's not
+                try {
+                    if (self.ai.writer) {
+                        // Check if SharedArrayBuffer is available
+                        if (typeof SharedArrayBuffer !== 'undefined') {
+                            sharedContext = new SharedArrayBuffer(1024);
+                            await self.ai.writer.setSharedContext(sharedContext);
+                            console.log('Writer API initialized successfully');
+                        } else {
+                            console.log('SharedArrayBuffer not available - Writer API features disabled');
+                        }
+                    }
+                } catch (writerError) {
+                    console.log('Writer API initialization skipped:', writerError.message);
                 }
 
                 session = await self.ai.languageModel.create({
