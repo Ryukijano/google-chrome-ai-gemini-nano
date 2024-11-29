@@ -192,6 +192,84 @@
             color: #666;
         }
 
+        .output {
+            position: relative;
+            min-height: 300px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            outline: none;
+        }
+
+        .output[contenteditable="true"] {
+            cursor: text;
+        }
+
+        .output[contenteditable="true"]:focus {
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .edit-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .edit-button {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .edit-button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .selection-tools {
+            position: absolute;
+            display: none;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .selection-tools.visible {
+            display: flex;
+        }
+
+        .selection-tools button {
+            padding: 0.25rem 0.5rem;
+            border-radius: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .selection-tools button:hover {
+            background: var(--primary-dark);
+        }
+
         @media (max-width: 768px) {
             .story-container {
                 grid-template-columns: 1fr;
@@ -253,7 +331,20 @@
                 </div>
                 
                 <div class="story-container">
-                    <div id="output" class="output"></div>
+                    <div class="edit-toolbar">
+                        <button id="toggleEdit" class="edit-button">Toggle Editing</button>
+                        <button id="formatText" class="edit-button">Format Text</button>
+                        <button id="saveChanges" class="edit-button">Save Changes</button>
+                        <button id="undoChange" class="edit-button" disabled>Undo</button>
+                    </div>
+                    
+                    <div id="output" class="output" contenteditable="false"></div>
+                    <div id="selectionTools" class="selection-tools">
+                        <button id="rewriteSelection">Rewrite Selection</button>
+                        <button id="expandSelection">Expand Selection</button>
+                        <button id="improveSelection">Improve Writing</button>
+                    </div>
+                    
                     <div id="story-stats" class="story-stats"></div>
                     <div class="story-controls">
                         <button id="continue" class="button" disabled>Continue Story</button>
@@ -270,6 +361,9 @@
         let currentStory = '';
         let isGenerating = false;
         let sharedContext = null;
+        let isEditing = false;
+        let undoStack = [];
+        let currentSelection = null;
 
         const elements = {
             genre: document.getElementById('genre'),
@@ -284,7 +378,15 @@
             error: document.getElementById('error'),
             loading: document.getElementById('loading'),
             status: document.getElementById('status'),
-            storyStats: document.getElementById('story-stats')
+            storyStats: document.getElementById('story-stats'),
+            toggleEdit: document.getElementById('toggleEdit'),
+            formatText: document.getElementById('formatText'),
+            saveChanges: document.getElementById('saveChanges'),
+            undoChange: document.getElementById('undoChange'),
+            selectionTools: document.getElementById('selectionTools'),
+            rewriteSelection: document.getElementById('rewriteSelection'),
+            expandSelection: document.getElementById('expandSelection'),
+            improveSelection: document.getElementById('improveSelection')
         };
 
         async function initAI() {
@@ -373,12 +475,16 @@
 
                 const response = await session.prompt(prompt);
                 currentStory = response;
-                elements.output.textContent = currentStory;
+                elements.output.innerHTML = currentStory;
                 updateStoryStats();
                 
                 elements.continue.disabled = false;
                 elements.rewrite.disabled = false;
                 elements.export.disabled = false;
+                
+                // Reset undo stack when generating new story
+                undoStack = [];
+                elements.undoChange.disabled = true;
             } catch (error) {
                 showError(error.message);
                 console.error('Generation error:', error);
@@ -441,6 +547,142 @@
             URL.revokeObjectURL(url);
         }
 
+        function toggleEditing() {
+            isEditing = !isEditing;
+            elements.output.contentEditable = isEditing;
+            elements.toggleEdit.classList.toggle('active');
+            elements.toggleEdit.textContent = isEditing ? 'Disable Editing' : 'Enable Editing';
+            
+            if (isEditing) {
+                saveToUndoStack();
+                elements.output.focus();
+            }
+        }
+
+        function saveToUndoStack() {
+            undoStack.push(elements.output.innerHTML);
+            elements.undoChange.disabled = false;
+            if (undoStack.length > 50) undoStack.shift(); // Limit undo stack
+        }
+
+        function undo() {
+            if (undoStack.length > 0) {
+                elements.output.innerHTML = undoStack.pop();
+                elements.undoChange.disabled = undoStack.length === 0;
+                currentStory = elements.output.textContent;
+                updateStoryStats();
+            }
+        }
+
+        function formatText() {
+            saveToUndoStack();
+            const text = elements.output.innerHTML;
+            const paragraphs = text.split(/\n\s*\n/);
+            const formattedText = paragraphs
+                .map(p => p.trim())
+                .filter(p => p)
+                .join('\n\n');
+            elements.output.innerHTML = formattedText;
+            currentStory = formattedText;
+            updateStoryStats();
+        }
+
+        function showSelectionTools(e) {
+            if (!isEditing) return;
+            
+            const selection = window.getSelection();
+            if (!selection.toString().trim()) {
+                elements.selectionTools.classList.remove('visible');
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            elements.selectionTools.style.top = `${rect.bottom + window.scrollY + 10}px`;
+            elements.selectionTools.style.left = `${rect.left + window.scrollX}px`;
+            elements.selectionTools.classList.add('visible');
+            currentSelection = {
+                text: selection.toString(),
+                range: range
+            };
+        }
+
+        async function rewriteSelection() {
+            if (!currentSelection) return;
+            
+            try {
+                setLoading(true);
+                elements.selectionTools.classList.remove('visible');
+                
+                const prompt = `Rewrite the following text segment while maintaining the story's context and style. Make it more engaging and vivid:\n\n${currentSelection.text}`;
+                
+                const response = await session.prompt(prompt);
+                
+                saveToUndoStack();
+                const range = currentSelection.range;
+                range.deleteContents();
+                range.insertNode(document.createTextNode(response));
+                
+                currentStory = elements.output.textContent;
+                updateStoryStats();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function expandSelection() {
+            if (!currentSelection) return;
+            
+            try {
+                setLoading(true);
+                elements.selectionTools.classList.remove('visible');
+                
+                const prompt = `Expand the following text segment by adding more details, descriptions, and dialogue while maintaining the story's style:\n\n${currentSelection.text}`;
+                
+                const response = await session.prompt(prompt);
+                
+                saveToUndoStack();
+                const range = currentSelection.range;
+                range.deleteContents();
+                range.insertNode(document.createTextNode(response));
+                
+                currentStory = elements.output.textContent;
+                updateStoryStats();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function improveSelection() {
+            if (!currentSelection) return;
+            
+            try {
+                setLoading(true);
+                elements.selectionTools.classList.remove('visible');
+                
+                const prompt = `Improve the following text segment by enhancing its literary quality, word choice, and flow while maintaining the story's style:\n\n${currentSelection.text}`;
+                
+                const response = await session.prompt(prompt);
+                
+                saveToUndoStack();
+                const range = currentSelection.range;
+                range.deleteContents();
+                range.insertNode(document.createTextNode(response));
+                
+                currentStory = elements.output.textContent;
+                updateStoryStats();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
         // Event Listeners
         elements.generate.addEventListener('click', generateStory);
         elements.continue.addEventListener('click', continueStory);
@@ -449,6 +691,38 @@
         elements.prompt.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) {
                 generateStory();
+            }
+        });
+
+        elements.toggleEdit.addEventListener('click', toggleEditing);
+        elements.formatText.addEventListener('click', formatText);
+        elements.undoChange.addEventListener('click', undo);
+        elements.output.addEventListener('mouseup', showSelectionTools);
+        elements.rewriteSelection.addEventListener('click', rewriteSelection);
+        elements.expandSelection.addEventListener('click', expandSelection);
+        elements.improveSelection.addEventListener('click', improveSelection);
+        
+        // Hide selection tools when clicking outside
+        document.addEventListener('mousedown', (e) => {
+            if (!elements.selectionTools.contains(e.target) && !elements.output.contains(e.target)) {
+                elements.selectionTools.classList.remove('visible');
+            }
+        });
+
+        // Save changes periodically when editing
+        elements.output.addEventListener('input', () => {
+            if (isEditing) {
+                currentStory = elements.output.textContent;
+                updateStoryStats();
+            }
+        });
+
+        elements.saveChanges.addEventListener('click', () => {
+            if (isEditing) {
+                saveToUndoStack();
+                currentStory = elements.output.textContent;
+                updateStoryStats();
+                showStatus('Changes saved', 'success');
             }
         });
 
