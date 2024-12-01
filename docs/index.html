@@ -3,27 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ AI Story Crafter</title>
+    <title>✨ Story Weaver - AI-Powered Writing Companion</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8b5cf6;
-            --primary-dark: #7c3aed;
-            --primary-light: #a78bfa;
-            --secondary: #10b981;
-            --secondary-dark: #059669;
-            --background: #0f172a;
-            --surface: #1e293b;
-            --text: #f8fafc;
-            --text-secondary: #94a3b8;
-            --error: #ef4444;
-            --success: #10b981;
+            /* Warm, organic color palette */
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --primary-light: #A78BFA;
+            --accent: #F59E0B;
+            --accent-dark: #D97706;
+            --background: #FFFBF5;
+            --surface: #F8F5FF;
+            --text: #2D3748;
+            --text-secondary: #4A5568;
+            --error: #DC2626;
+            --success: #059669;
+            
+            /* Spacing and layout */
             --max-width: 1400px;
             --header-height: 80px;
             --sidebar-width: 320px;
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -33,12 +37,10 @@
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--background), var(--surface));
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+            background: var(--background);
             color: var(--text);
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
+            line-height: 1.7;
         }
 
         .container {
@@ -52,106 +54,85 @@
 
         .header {
             text-align: center;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
             position: relative;
+            background: linear-gradient(135deg, var(--surface), #fff);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
         }
 
         .header::before {
-            content: '';
+            content: '✨';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200px;
-            height: 200px;
-            background: var(--primary);
-            filter: blur(100px);
-            opacity: 0.15;
-            transform: translate(-50%, -50%);
-            z-index: -1;
+            top: 2rem;
+            left: 2rem;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .header::after {
+            content: '📖';
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            font-size: 2rem;
+            opacity: 0.8;
         }
 
         .header h1 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Crimson Pro', serif;
             font-size: 3.5rem;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text);
+            font-weight: 700;
             letter-spacing: -0.02em;
         }
 
         .header p {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--text-secondary);
             max-width: 600px;
             margin: 0 auto;
+            line-height: 1.6;
         }
 
         .content {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             flex: 1;
-            min-height: 0;
             position: relative;
         }
 
-        .content::before {
-            content: '';
-            position: absolute;
-            top: 20%;
-            right: 10%;
-            width: 300px;
-            height: 300px;
-            background: var(--secondary);
-            filter: blur(120px);
-            opacity: 0.07;
-            z-index: -1;
+        .section-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
         }
 
         .input-section {
             flex: 0 0 var(--sidebar-width);
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 2rem;
             position: sticky;
             top: 2rem;
-            max-height: calc(100vh - 4rem);
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 1.5rem;
-            border: 1px solid rgba(148, 163, 184, 0.1);
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
             box-shadow: var(--card-shadow);
         }
 
-        .input-section::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .input-section::-webkit-scrollbar-thumb {
-            background-color: var(--primary);
-            border-radius: 3px;
-        }
-
-        .output-section {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
         .story-container {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            padding: 2rem;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
             height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 2rem;
             box-shadow: var(--card-shadow);
         }
 
@@ -161,63 +142,75 @@
             gap: 1rem;
         }
 
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
         .select, .textarea, .button {
             width: 100%;
             padding: 0.875rem 1.25rem;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(148, 163, 184, 0.1);
+            background: white;
+            border: 2px solid #E2E8F0;
             color: var(--text);
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            font-family: 'DM Sans', sans-serif;
         }
 
         .select {
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234A5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 1rem center;
             background-size: 1.25rem;
             padding-right: 2.5rem;
         }
 
-        .select:hover, .textarea:hover, .button:hover:not(:disabled) {
-            background-color: rgba(255, 255, 255, 0.1);
+        .select:hover, .textarea:hover {
             border-color: var(--primary-light);
         }
 
         .select:focus, .textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
 
         .textarea {
             min-height: 180px;
             resize: vertical;
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .button {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             border: none;
-            font-weight: 500;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            color: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem 1.5rem;
+            transition: all 0.2s ease;
+            border-radius: 12px;
+            text-transform: none;
+            font-size: 1rem;
         }
 
         .button:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            background: var(--primary-dark);
             transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
         }
 
         .button:active:not(:disabled) {
@@ -231,40 +224,13 @@
         }
 
         .error {
-            background: rgba(239, 68, 68, 0.1);
+            background: #FEE2E2;
             border: 1px solid var(--error);
             color: var(--error);
             padding: 1rem 1.25rem;
             border-radius: 12px;
             margin-bottom: 1rem;
             font-weight: 500;
-        }
-
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            z-index: 10;
-            background: rgba(15, 23, 42, 0.95);
-            padding: 2.5rem;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            box-shadow: var(--card-shadow);
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 3px solid rgba(139, 92, 246, 0.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
         }
 
         .output-wrapper {
@@ -274,29 +240,32 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            border: 1px solid rgba(148, 163, 184, 0.1);
+            background: white;
+            border-radius: var(--border-radius);
+            border: 2px solid #E2E8F0;
         }
 
         .output {
             flex: 1;
             overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) transparent;
-            padding: 1.5rem;
-            font-size: 1.05rem;
-            line-height: 1.75;
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
             color: var(--text);
+            font-family: 'Crimson Pro', serif;
         }
 
         .output::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
+        }
+
+        .output::-webkit-scrollbar-track {
+            background: #F1F1F1;
         }
 
         .output::-webkit-scrollbar-thumb {
-            background-color: var(--primary);
-            border-radius: 3px;
+            background: var(--primary-light);
+            border-radius: 4px;
         }
 
         .output[contenteditable="true"] {
@@ -305,7 +274,7 @@
         }
 
         .output[contenteditable="true"]:focus {
-            box-shadow: 0 0 0 2px var(--primary);
+            box-shadow: inset 0 0 0 2px var(--primary-light);
         }
 
         .edit-toolbar {
@@ -313,89 +282,55 @@
             flex-wrap: wrap;
             gap: 0.75rem;
             margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            background: var(--surface);
             border-radius: 12px;
+            border: 2px solid #E2E8F0;
         }
 
         .edit-button {
-            padding: 0.625rem 1rem;
+            padding: 0.75rem 1.25rem;
             border-radius: 10px;
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary-light);
-            border: 1px solid var(--primary);
+            background: white;
+            color: var(--text);
+            border: 2px solid #E2E8F0;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
             font-weight: 500;
         }
 
         .edit-button:hover {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
         }
 
         .edit-button.active {
             background: var(--primary);
             color: white;
-        }
-
-        .selection-tools {
-            position: absolute;
-            display: none;
-            padding: 0.75rem;
-            background: rgba(15, 23, 42, 0.95);
-            border-radius: 12px;
-            gap: 0.75rem;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            box-shadow: var(--card-shadow);
-        }
-
-        .selection-tools.visible {
-            display: flex;
-        }
-
-        .selection-tools button {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .selection-tools button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
+            border-color: var(--primary);
         }
 
         .story-controls {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.75rem;
+            gap: 1rem;
             margin-top: auto;
             padding-top: 1.5rem;
-            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            border-top: 2px solid #E2E8F0;
         }
 
         .story-stats {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-secondary);
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem 1.25rem;
+            background: var(--surface);
             border-radius: 10px;
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             justify-content: center;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            border: 2px solid #E2E8F0;
         }
 
         @media (max-width: 1200px) {
@@ -416,13 +351,7 @@
             .input-section {
                 position: relative;
                 top: 0;
-                flex: none;
-                max-height: none;
                 width: 100%;
-            }
-
-            .output-section {
-                height: 600px;
             }
 
             .header h1 {
@@ -436,15 +365,11 @@
             }
 
             .header {
-                padding: 2rem 0;
+                padding: 2.5rem 1rem;
             }
 
             .header h1 {
                 font-size: 2rem;
-            }
-
-            .controls {
-                grid-template-columns: 1fr;
             }
 
             .story-controls {
@@ -455,12 +380,8 @@
                 width: 100%;
             }
 
-            .output-section {
-                height: 500px;
-            }
-
             .story-container {
-                padding: 1.25rem;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -469,38 +390,47 @@
     <div class="container">
         <div id="status" class="status-indicator" style="display: none;"></div>
         <header class="header">
-            <h1>✨ AI Story Crafter</h1>
+            <h1>✨ Story Weaver - AI-Powered Writing Companion</h1>
             <p>Transform your ideas into captivating stories with AI assistance</p>
         </header>
         
         <main class="content">
             <section class="input-section">
                 <div class="controls">
-                    <select id="genre" class="select">
-                        <option value="fantasy">Fantasy</option>
-                        <option value="science-fiction">Science Fiction</option>
-                        <option value="mystery">Mystery</option>
-                        <option value="romance">Romance</option>
-                        <option value="horror">Horror</option>
-                        <option value="historical">Historical</option>
-                        <option value="adventure">Adventure</option>
-                    </select>
+                    <div class="control-group">
+                        <label class="control-label" for="genre">Genre:</label>
+                        <select id="genre" class="select">
+                            <option value="fantasy">Fantasy</option>
+                            <option value="science-fiction">Science Fiction</option>
+                            <option value="mystery">Mystery</option>
+                            <option value="romance">Romance</option>
+                            <option value="horror">Horror</option>
+                            <option value="historical">Historical</option>
+                            <option value="adventure">Adventure</option>
+                        </select>
+                    </div>
 
-                    <select id="tone" class="select">
-                        <option value="dramatic">Dramatic</option>
-                        <option value="humorous">Humorous</option>
-                        <option value="dark">Dark</option>
-                        <option value="whimsical">Whimsical</option>
-                        <option value="inspirational">Inspirational</option>
-                        <option value="mysterious">Mysterious</option>
-                        <option value="philosophical">Philosophical</option>
-                    </select>
+                    <div class="control-group">
+                        <label class="control-label" for="tone">Tone:</label>
+                        <select id="tone" class="select">
+                            <option value="dramatic">Dramatic</option>
+                            <option value="humorous">Humorous</option>
+                            <option value="dark">Dark</option>
+                            <option value="whimsical">Whimsical</option>
+                            <option value="inspirational">Inspirational</option>
+                            <option value="mysterious">Mysterious</option>
+                            <option value="philosophical">Philosophical</option>
+                        </select>
+                    </div>
                 </div>
 
-                <textarea id="prompt" placeholder="Enter your story prompt here..." class="textarea"></textarea>
+                <div class="control-group">
+                    <label class="control-label" for="prompt">Story Prompt:</label>
+                    <textarea id="prompt" placeholder="Enter your story prompt here..." class="textarea"></textarea>
+                </div>
                 
-                <div class="story-format">
-                    <label>Story Length:</label>
+                <div class="control-group">
+                    <label class="control-label" for="length">Story Length:</label>
                     <select id="length" class="select">
                         <option value="short">Short (~300 words)</option>
                         <option value="medium">Medium (~600 words)</option>
@@ -528,11 +458,6 @@
                     
                     <div class="output-wrapper">
                         <div id="output" class="output" contenteditable="false"></div>
-                        <div id="selectionTools" class="selection-tools">
-                            <button id="rewriteSelection">Rewrite Selection</button>
-                            <button id="expandSelection">Expand Selection</button>
-                            <button id="improveSelection">Improve Writing</button>
-                        </div>
                     </div>
                     
                     <div id="story-stats" class="story-stats"></div>
@@ -572,11 +497,7 @@
             toggleEdit: document.getElementById('toggleEdit'),
             formatText: document.getElementById('formatText'),
             saveChanges: document.getElementById('saveChanges'),
-            undoChange: document.getElementById('undoChange'),
-            selectionTools: document.getElementById('selectionTools'),
-            rewriteSelection: document.getElementById('rewriteSelection'),
-            expandSelection: document.getElementById('expandSelection'),
-            improveSelection: document.getElementById('improveSelection')
+            undoChange: document.getElementById('undoChange')
         };
 
         async function initAI() {
@@ -777,102 +698,6 @@
             updateStoryStats();
         }
 
-        function showSelectionTools(e) {
-            if (!isEditing) return;
-            
-            const selection = window.getSelection();
-            if (!selection.toString().trim()) {
-                elements.selectionTools.classList.remove('visible');
-                return;
-            }
-
-            const range = selection.getRangeAt(0);
-            const rect = range.getBoundingClientRect();
-            
-            elements.selectionTools.style.top = `${rect.bottom + window.scrollY + 10}px`;
-            elements.selectionTools.style.left = `${rect.left + window.scrollX}px`;
-            elements.selectionTools.classList.add('visible');
-            currentSelection = {
-                text: selection.toString(),
-                range: range
-            };
-        }
-
-        async function rewriteSelection() {
-            if (!currentSelection) return;
-            
-            try {
-                setLoading(true);
-                elements.selectionTools.classList.remove('visible');
-                
-                const prompt = `Rewrite the following text segment while maintaining the story's context and style. Make it more engaging and vivid:\n\n${currentSelection.text}`;
-                
-                const response = await session.prompt(prompt);
-                
-                saveToUndoStack();
-                const range = currentSelection.range;
-                range.deleteContents();
-                range.insertNode(document.createTextNode(response));
-                
-                currentStory = elements.output.textContent;
-                updateStoryStats();
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        async function expandSelection() {
-            if (!currentSelection) return;
-            
-            try {
-                setLoading(true);
-                elements.selectionTools.classList.remove('visible');
-                
-                const prompt = `Expand the following text segment by adding more details, descriptions, and dialogue while maintaining the story's style:\n\n${currentSelection.text}`;
-                
-                const response = await session.prompt(prompt);
-                
-                saveToUndoStack();
-                const range = currentSelection.range;
-                range.deleteContents();
-                range.insertNode(document.createTextNode(response));
-                
-                currentStory = elements.output.textContent;
-                updateStoryStats();
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        async function improveSelection() {
-            if (!currentSelection) return;
-            
-            try {
-                setLoading(true);
-                elements.selectionTools.classList.remove('visible');
-                
-                const prompt = `Improve the following text segment by enhancing its literary quality, word choice, and flow while maintaining the story's style:\n\n${currentSelection.text}`;
-                
-                const response = await session.prompt(prompt);
-                
-                saveToUndoStack();
-                const range = currentSelection.range;
-                range.deleteContents();
-                range.insertNode(document.createTextNode(response));
-                
-                currentStory = elements.output.textContent;
-                updateStoryStats();
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
         // Event Listeners
         elements.generate.addEventListener('click', generateStory);
         elements.continue.addEventListener('click', continueStory);
@@ -887,18 +712,7 @@
         elements.toggleEdit.addEventListener('click', toggleEditing);
         elements.formatText.addEventListener('click', formatText);
         elements.undoChange.addEventListener('click', undo);
-        elements.output.addEventListener('mouseup', showSelectionTools);
-        elements.rewriteSelection.addEventListener('click', rewriteSelection);
-        elements.expandSelection.addEventListener('click', expandSelection);
-        elements.improveSelection.addEventListener('click', improveSelection);
         
-        // Hide selection tools when clicking outside
-        document.addEventListener('mousedown', (e) => {
-            if (!elements.selectionTools.contains(e.target) && !elements.output.contains(e.target)) {
-                elements.selectionTools.classList.remove('visible');
-            }
-        });
-
         // Save changes periodically when editing
         elements.output.addEventListener('input', () => {
             if (isEditing) {
