@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            /* Warm, organic color palette */
+        /* Theme Variables */
+        html[data-theme="light"] {
             --primary: #8B5CF6;
             --primary-dark: #7C3AED;
             --primary-light: #A78BFA;
@@ -17,19 +17,70 @@
             --accent-dark: #D97706;
             --background: #FFFBF5;
             --surface: #F8F5FF;
+            --surface-2: #FFFFFF;
             --text: #2D3748;
             --text-secondary: #4A5568;
+            --border: #E2E8F0;
             --error: #DC2626;
             --success: #059669;
-            
-            /* Spacing and layout */
-            --max-width: 1400px;
-            --header-height: 80px;
-            --sidebar-width: 320px;
-            --border-radius: 16px;
-            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
         }
 
+        html[data-theme="dark"] {
+            --primary: #A78BFA;
+            --primary-dark: #8B5CF6;
+            --primary-light: #C4B5FD;
+            --accent: #FBBF24;
+            --accent-dark: #F59E0B;
+            --background: #0F172A;
+            --surface: #1E293B;
+            --surface-2: #2D3748;
+            --text: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --border: #475569;
+            --error: #EF4444;
+            --success: #10B981;
+        }
+
+        /* Theme Switcher Styles */
+        .theme-switch {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            padding: 0.5rem;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .theme-switch:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-switch button {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .theme-switch button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Rest of your existing styles with color variables */
         * {
             margin: 0;
             padding: 0;
@@ -41,6 +92,7 @@
             background: var(--background);
             color: var(--text);
             line-height: 1.7;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -57,9 +109,10 @@
             padding: 4rem 0;
             margin-bottom: 3rem;
             position: relative;
-            background: linear-gradient(135deg, var(--surface), #fff);
+            background: var(--surface);
             border-radius: var(--border-radius);
             box-shadow: var(--card-shadow);
+            border: 2px solid var(--border);
         }
 
         .header::before {
@@ -387,6 +440,10 @@
     </style>
 </head>
 <body>
+    <div class="theme-switch">
+        <button id="lightMode" class="active" aria-label="Light Mode">☀️</button>
+        <button id="darkMode" aria-label="Dark Mode">🌙</button>
+    </div>
     <div class="container">
         <div id="status" class="status-indicator" style="display: none;"></div>
         <header class="header">
@@ -696,6 +753,30 @@
             elements.output.innerHTML = formattedText;
             currentStory = formattedText;
             updateStoryStats();
+        }
+
+        // Theme switching functionality
+        const html = document.documentElement;
+        const themeSwitch = {
+            light: document.getElementById('lightMode'),
+            dark: document.getElementById('darkMode')
+        };
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        // Theme switch event listeners
+        themeSwitch.light.addEventListener('click', () => setTheme('light'));
+        themeSwitch.dark.addEventListener('click', () => setTheme('dark'));
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            // Update button states
+            themeSwitch.light.classList.toggle('active', theme === 'light');
+            themeSwitch.dark.classList.toggle('active', theme === 'dark');
         }
 
         // Event Listeners
